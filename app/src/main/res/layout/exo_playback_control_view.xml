@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:animateLayoutChanges="true"
+    android:background="@null"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/exo_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="164dp"
+        app:layout_constrainedWidth="true"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_bg"
+        android:backgroundTint="@color/blackTrans2"
+        android:padding="5dp"
+        android:text="999 / 999"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="100dp"
+        app:layout_constrainedWidth="true"
+        android:layout_height="100dp"
+        android:layout_marginStart="154dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="157dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exo_count">
+
+        <ImageView
+            android:id="@id/exo_play"
+            style="@style/ExoMediaButton.Play"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/circle_bg"
+            android:backgroundTint="@color/blackTrans2"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/exo_controls_play"
+            android:tint="@color/white" />
+
+        <ImageView
+            android:id="@id/exo_pause"
+            style="@style/ExoMediaButton.Pause"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/circle_bg"
+            android:backgroundTint="@color/blackTrans2"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/exo_controls_pause"
+            android:tint="@color/white" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@id/exo_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/round_bg"
+        android:backgroundTint="@color/blackTrans2"
+        android:padding="5dp"
+        android:text="00:00"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/buttonContainer"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@id/exo_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/round_bg"
+        android:backgroundTint="@color/blackTrans2"
+        android:padding="5dp"
+        android:text="99:99"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/buttonContainer"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/exo_next_song"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/round_bg"
+        android:backgroundTint="@color/blackTrans2"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-light"
+        android:maxLines="1"
+        android:padding="5dp"
+        android:text="偽物ー夢があったら"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

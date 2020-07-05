@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fragmentLibrary"
+        android:icon="@drawable/ic_menu"
+        android:title="Library" />
+    <item
+        android:id="@+id/fragmentSearch"
+        android:icon="@drawable/ic_search"
+        android:title="Search" />
+    <item
+        android:id="@+id/fragmentSetting"
+        android:icon="@drawable/ic_setting"
+        android:title="Setting" />
+</menu>

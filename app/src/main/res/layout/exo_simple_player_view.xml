@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020.
+  ~ Animize Devs
+  ~ Copyright 2019 - 2020
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ This program used for watching anime without ads.
+  ~
+  -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.exoplayer2.ui.PlaybackControlView
+        android:id="@id/exo_controller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
+    <View
+        android:id="@id/exo_controller_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</merge>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/TextAppearance.Compat.Notification.Media"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/notification_image"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <LinearLayout
+            android:layout_marginStart="2dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/notification_title"
+                style="@style/TextAppearance.Compat.Notification.Title.Media"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/notification_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Anata no tokorode \n asasfasf" />
+
+            <TextView
+                android:id="@+id/notification_detail"
+                style="@style/TextAppearance.Compat.Notification.Title.Media"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:maxLines="2"
+                app:layout_constraintEnd_toStartOf="@+id/notification_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/notification_title"
+                tools:text=" saugfu ashfisahfihsaihi saugfusfgsau saugfusa saufgu" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <ImageView
+                android:id="@+id/notification_play_pause"
+                style="@style/TextAppearance.Compat.Notification.Media"
+                android:layout_width="15dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/exo_notification_play"
+                android:tint="@color/colorText"
+                app:layout_constraintEnd_toStartOf="@+id/notification_forward"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/notification_detail" />
+
+            <ImageView
+                android:id="@+id/notification_forward"
+                style="@style/TextAppearance.Compat.Notification.Media"
+                android:layout_width="15dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/exo_notification_fastforward"
+                android:tint="@color/colorText"
+                app:layout_constraintEnd_toStartOf="@+id/notification_stop"
+                app:layout_constraintStart_toEndOf="@+id/notification_play_pause"
+                app:layout_constraintTop_toBottomOf="@+id/notification_detail" />
+
+            <ImageView
+                android:id="@+id/notification_stop"
+                style="@style/TextAppearance.Compat.Notification.Media"
+                android:layout_width="15dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/exo_notification_stop"
+                android:tint="@color/colorText"
+                app:layout_constraintStart_toEndOf="@+id/notification_forward"
+                app:layout_constraintTop_toBottomOf="@+id/notification_detail" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/notification_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_song" />
+</RelativeLayout>

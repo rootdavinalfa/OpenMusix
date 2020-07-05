@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/master_nvaigation"
+    app:startDestination="@id/fragmentLibrary">
+
+    <fragment
+        android:id="@+id/fragmentLibrary"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentLibrary"
+        android:label="Library">
+        <action
+            android:id="@+id/action_fragmentLibrary_to_fragmentSearch"
+            app:destination="@id/fragmentSearch" />
+        <action
+            android:id="@+id/action_fragmentLibrary_to_fragmentPlayer"
+            app:destination="@id/fragmentPlayer" />
+        <action
+            android:id="@+id/action_fragmentLibrary_to_fragmentSetting"
+            app:destination="@id/fragmentSetting" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentSearch"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentSearch"
+        android:label="Search" />
+    <fragment
+        android:id="@+id/fragmentPlayer"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentPlayer"
+        android:label="Player" />
+    <fragment
+        android:id="@+id/fragmentSetting"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentSetting"
+        android:label="Setting" />
+</navigation>

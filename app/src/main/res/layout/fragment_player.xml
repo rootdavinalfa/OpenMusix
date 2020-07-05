@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playerContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/blackTrans2"
+    android:backgroundTintMode="src_atop">
+
+    <com.yarolegovich.discretescrollview.DiscreteScrollView
+        android:id="@+id/playerList"
+        android:layout_width="0dp"
+        android:layout_height="380dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/rv_now_play" />
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp"
+        app:controller_layout_id="@layout/exo_playback_control_view"
+        app:hide_on_touch="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playerList"
+        app:player_layout_id="@layout/exo_simple_player_view"
+        app:show_timeout="0"
+        app:surface_type="none"
+        app:use_artwork="false"
+        app:use_controller="true" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
