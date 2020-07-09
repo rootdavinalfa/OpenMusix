@@ -7,8 +7,14 @@ OpenMusix is Application to listen offline music on your phone
 
 ## LEGAL
 Copyright 2020 Davin Alfarizky Putra Basudewa
+
 Apache 2.0
+
 Common Creative License for any image asset on this project
+
+## Disclaimer
+
+Don't upload this project to playstore or you will get the consequence!
 
 ## Screenshot
 <span align="center"><img width="200px" height="360px" src="docs/ss1.jpg"></span>
