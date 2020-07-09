@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2020.
+ * Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+ * OpenMusix ,An open source music media player
+ * Under License Apache 2.0
+ * [This app does not contain any warranty]
+ *
+ */
+
 package xyz.dvnlabs.openmusix.ui.activity
 
 import android.Manifest
@@ -12,7 +21,9 @@ import android.view.MenuItem
 import android.view.animation.AnimationUtils
 import androidx.appcompat.view.menu.MenuItemImpl
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -30,19 +41,18 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.app.AppSingleton
 import xyz.dvnlabs.openmusix.base.BaseActivity
-import xyz.dvnlabs.openmusix.data.MediaDataDB
+import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.databinding.ActivityMainBinding
-import xyz.dvnlabs.openmusix.event.PlayerData
+import xyz.dvnlabs.openmusix.service.PlaybackStatus
 import xyz.dvnlabs.openmusix.service.PlayerManager
 import xyz.dvnlabs.openmusix.service.PlaylistQueue
+import xyz.dvnlabs.openmusix.service.event.PlayerChange
+import xyz.dvnlabs.openmusix.service.event.RxBusEvent
 import xyz.dvnlabs.openmusix.ui.viewmodel.ListViewModel
 import xyz.dvnlabs.openmusix.util.PermissionData
 import xyz.dvnlabs.openmusix.util.PermissionHelper
@@ -52,7 +62,7 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
     BottomNavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMainBinding
     private val listVM: ListViewModel by viewModel()
-    private val mediaDB: MediaDataDB by inject()
+    private val mediaDB: MediaDB by inject()
     private var playerManager: PlayerManager? = null
 
 
@@ -60,7 +70,6 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        EventBus.getDefault().register(this)
 
         val check = arrayOf(
             PermissionData(Manifest.permission.READ_EXTERNAL_STORAGE, 22),
@@ -85,6 +94,12 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                 }
                 else -> {
                     binding.playerLayout.playerExpand.isExpanded = true
+                    binding.playerLayout.bottomNav.setBackgroundColor(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.colorBackground
+                        )
+                    )
                     binding.playerLayout.bottomNav.menu.findItem(destination.id).isChecked = true
                 }
             }
@@ -93,7 +108,7 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
         var fileID = -1L
         Observable.create<Long> { emitter: ObservableEmitter<Long>? ->
             Schedulers.newThread().schedulePeriodicallyDirect({
-                val fileID = sharedPref.getLong("file_id", -1)
+                fileID = sharedPref.getLong("file_id", -1)
                 emitter?.onNext(fileID)
             }, 0, 500, TimeUnit.MILLISECONDS)
         }.observeOn(AndroidSchedulers.mainThread()).subscribe {
@@ -101,38 +116,65 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
             listVM.changeFileID(it)
         }
         binding.playerLayout.bottomNav.setOnNavigationItemSelectedListener(this)
-
-
         playerManager = PlayerManager(this)
         if (PlayerManager.service == null) {
             playerManager?.bind()
-            listVM.currentFileID.observe(this, Observer {
+            listVM.currentFileID.distinctUntilChanged().observe(this, Observer {
                 lifecycleScope.launch {
                     currentPlaying(it)
                 }
             })
-        }
-        binding.playerLayout.playerButton.setOnClickListener {
-            lifecycleScope.launch {
-                currentPlaying(fileID)
+            RxBusEvent.listen(PlayerChange.CurrentData::class.java)
+                .distinctUntilChanged()
+                .subscribe {
+                    lifecycleScope.launch {
+                        if (it.currentTag != null) {
+                            currentPlaying(it.currentTag as Long)
+                        }
+                    }
+                }
+            RxBusEvent.listen(PlayerChange.OnPlayerStateChanged::class.java)
+                .distinctUntilChanged()
+                .subscribe {
+                    when (it.state) {
+                        PlaybackStatus.PLAYING -> {
+                            binding.playerLayout.playerButton.setImageDrawable(this.getDrawable(R.drawable.exo_controls_pause))
+                        }
+                        PlaybackStatus.PAUSED -> {
+                            binding.playerLayout.playerButton.setImageDrawable(this.getDrawable(R.drawable.exo_controls_play))
+                        }
+                    }
+                }
+
+            binding.playerLayout.playerButton.setOnClickListener {
+                lifecycleScope.launch {
+                    currentPlaying(fileID)
+                }
+                it.startAnimation(AnimationUtils.loadAnimation(this, R.anim.click_anim_1))
+                when (PlayerManager.service?.isPlaying()) {
+                    true -> {
+                        PlayerManager.service?.transportControls?.pause()
+                    }
+                    false -> {
+                        PlayerManager.service?.transportControls?.play()
+                    }
+                    else -> {
+                        PlayerManager.service?.transportControls?.play()
+                    }
+                }
             }
-            it.startAnimation(AnimationUtils.loadAnimation(this, R.anim.click_anim_1))
-            when (PlayerManager.service?.isPlaying()) {
-                true -> {
-                    PlayerManager.service?.transportControls?.pause()
-                }
-                false -> {
-                    PlayerManager.service?.transportControls?.play()
-                }
-                else -> {
-                    PlayerManager.service?.transportControls?.play()
-                }
-            }
         }
+
+    }
+
+    override fun onDestroy() {
+        if (PlayerManager.service != null) {
+            playerManager?.unbind()
+        }
+        super.onDestroy()
     }
 
     override fun onStop() {
-        EventBus.getDefault().unregister(this)
         super.onStop()
     }
 
@@ -200,11 +242,8 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                     for (a in mediaData) {
                         playList.add(
                             PlaylistQueue(
-                                a.contentURI,
                                 a.fileID,
-                                a.albumID,
-                                a.artistID,
-                                a.title
+                                a
                             )
                         )
                     }
@@ -225,6 +264,12 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
     @SuppressLint("RestrictedApi")
     private fun unSelectBottomNav() {
         binding.playerLayout.playerExpand.isExpanded = false
+        binding.playerLayout.bottomNav.setBackgroundColor(
+            ContextCompat.getColor(
+                this,
+                R.color.blackTrans2
+            )
+        )
         val menu = binding.playerLayout.bottomNav.menu
         for (i in 0 until menu.size()) {
             (menu.getItem(i) as? MenuItemImpl)?.let {
@@ -257,18 +302,6 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
             }
             else -> {
                 false
-            }
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onPlayerData(data: PlayerData) {
-        when (PlayerManager.service?.isPlaying()) {
-            true -> {
-                binding.playerLayout.playerButton.setImageDrawable(this.getDrawable(R.drawable.exo_controls_pause))
-            }
-            false -> {
-                binding.playerLayout.playerButton.setImageDrawable(this.getDrawable(R.drawable.exo_controls_play))
             }
         }
     }

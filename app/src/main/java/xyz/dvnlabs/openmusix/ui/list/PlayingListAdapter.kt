@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2020.
+ * Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+ * OpenMusix ,An open source music media player
+ * Under License Apache 2.0
+ * [This app does not contain any warranty]
+ *
+ */
+
 package xyz.dvnlabs.openmusix.ui.list
 
 import android.content.ContentUris
@@ -8,7 +17,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -18,24 +26,22 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.exoplayer2.Player
 import kotlinx.android.synthetic.main.rv_now_play.view.*
-import org.greenrobot.eventbus.EventBus
 import xyz.dvnlabs.openmusix.R
+import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.data.MediaData
-import xyz.dvnlabs.openmusix.data.MediaDataDB
-import xyz.dvnlabs.openmusix.event.PlayerBusState
 
 class PlayingListAdapter(private val itemResource: Int) :
     RecyclerView.Adapter<PlayingListAdapter.ViewHolder>() {
-    private var mediaDB: MediaDataDB? = null
+    private var mediaDB: MediaDB? = null
     private var mediaList: List<MediaData> = emptyList()
+    private var lastPosition: Int = 0
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): PlayingListAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(this.itemResource, parent, false)
-        mediaDB = MediaDataDB.getDatabase(parent.context)
+        mediaDB = MediaDB.getDatabase(parent.context)
         return ViewHolder(view, parent.context)
     }
 
@@ -111,11 +117,6 @@ class PlayingListAdapter(private val itemResource: Int) :
                 ).into(image)
             title.text = media!!.title
             detailText.text = detail
-            val sharedPref = context.getSharedPreferences("current", Context.MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                putLong("file_id", media!!.fileID)
-                commit()
-            }
         }
 
         override fun onClick(v: View?) {

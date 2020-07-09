@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2020.
-  ~ Animize Devs
-  ~ Copyright 2019 - 2020
   ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
-  ~ This program used for watching anime without ads.
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
   ~
   -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"

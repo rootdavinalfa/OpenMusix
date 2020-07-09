@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2020.
+ * Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+ * OpenMusix ,An open source music media player
+ * Under License Apache 2.0
+ * [This app does not contain any warranty]
+ *
+ */
+
 package xyz.dvnlabs.openmusix.data
 
 import androidx.room.Dao
@@ -13,7 +22,7 @@ interface MediaGenreDAO {
     @Query("DELETE FROM MediaGenre WHERE file_id = :id")
     suspend fun deleteGenre(id: Long)
 
-    @Query("SELECT * FROM MediaGenre WHERE file_id = :id")
+    @Query("SELECT * FROM MediaGenre WHERE file_id = :id ORDER BY genre_name COLLATE NOCASE")
     suspend fun getGenre(id: Long): List<MediaGenre>
 
 }

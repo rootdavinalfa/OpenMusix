@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2020.
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
+  ~
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="511.478dp"
+    android:height="511.478dp"
+    android:viewportWidth="511.478"
+    android:viewportHeight="511.478">
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M191.935,0v42.667h42.667V64c14.933,-2.133 27.733,-2.133 42.667,0V42.667h42.667V0H191.935z" />
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M401.002,140.8l14.933,-14.933l17.067,17.067l29.867,-29.867l-64,-64l-29.867,29.867L386.069,96l-19.2,19.2c-102.4,-61.867 -234.667,-29.867 -294.4,72.533S44.735,418.133 145.002,480s232.533,29.867 292.267,-72.533C490.602,320 475.669,209.067 401.002,140.8zM255.935,445.867c-83.2,0 -149.333,-66.133 -149.333,-149.333S172.735,147.2 255.935,147.2v149.333h149.333C405.269,379.733 339.135,445.867 255.935,445.867z" />
+</vector>

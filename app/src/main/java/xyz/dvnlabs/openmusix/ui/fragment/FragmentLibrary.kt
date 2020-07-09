@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2020.
+ * Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+ * OpenMusix ,An open source music media player
+ * Under License Apache 2.0
+ * [This app does not contain any warranty]
+ *
+ */
+
 package xyz.dvnlabs.openmusix.ui.fragment
 
 import android.content.Context
@@ -16,6 +25,7 @@ import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.databinding.FragmentLibraryBinding
 import xyz.dvnlabs.openmusix.ui.list.MediaListAdapter
 import xyz.dvnlabs.openmusix.ui.viewmodel.ListViewModel
+import xyz.dvnlabs.openmusix.util.MediaScannerWorker
 import xyz.dvnlabs.openmusix.util.view.AutoGridLayoutManager
 
 class FragmentLibrary : FragmentHost() {
@@ -45,17 +55,18 @@ class FragmentLibrary : FragmentHost() {
         binding?.libraryList?.adapter = adapter
         listVM.listMedia.observe(viewLifecycleOwner, Observer { x ->
             adapter.setMediaList(x)
-            if (firstTime && binding?.libraryList?.size != 0) {
-                val sharedPref =
-                    requireContext().getSharedPreferences("current", Context.MODE_PRIVATE)
-                val fileID = sharedPref.getLong("file_id", -1)
-                val data = listVM.listMedia.value
-                val current = data!!.singleOrNull { it.fileID == fileID }
-                val index = data.indexOf(current)
-                binding?.libraryList?.scrollToPosition(index)
-                firstTime = false
-            }
         })
+
+        if (firstTime && binding?.libraryList?.size != 0) {
+            val sharedPref =
+                requireContext().getSharedPreferences("current", Context.MODE_PRIVATE)
+            val fileID = sharedPref.getLong("file_id", -1)
+            val data = listVM.listMedia.value
+            val current = data!!.singleOrNull { it.fileID == fileID }
+            val index = data.indexOf(current)
+            binding?.libraryList?.smoothScrollToPosition(index)
+            firstTime = false
+        }
 
         var checkScrollUp = false
         binding?.libraryList?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -73,6 +84,9 @@ class FragmentLibrary : FragmentHost() {
                 }
             }
         })
+        binding?.libraryRefresh?.setOnClickListener {
+            MediaScannerWorker.setupTaskImmediately(requireContext())
+        }
 
         super.onViewCreated(view, savedInstanceState)
     }

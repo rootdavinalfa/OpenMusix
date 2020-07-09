@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2020.
+ * Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+ * OpenMusix ,An open source music media player
+ * Under License Apache 2.0
+ * [This app does not contain any warranty]
+ *
+ */
+
 package xyz.dvnlabs.openmusix.service
 
 import android.content.ComponentName
@@ -13,8 +22,9 @@ class PlayerManager(private val context: Context) {
     var isServiceBound = false
         private set
 
+
     fun bind() {
-        Log.e("BINDING:", "OK")
+        Log.i("API-> BINDING:", "OK")
         Intent(context, PlayerService::class.java).also {
             context.bindService(it, serviceConnection, Context.BIND_AUTO_CREATE)
         }
@@ -25,14 +35,10 @@ class PlayerManager(private val context: Context) {
     }
 
     fun unbind() {
-        Log.e("UNBINDING:", "OK")
-        //if (serviceBound){
-        //context.getApplicationContext().stopService(new Intent(context,PlayerService.class));
+        Log.i("API-> UNBINDING:", "OK")
         context.unbindService(serviceConnection)
         isServiceBound = false
         service = null
-
-        //}
     }
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
@@ -41,19 +47,16 @@ class PlayerManager(private val context: Context) {
             service = playerBinder.service
             isServiceBound = true
             if (service != null) {
-                Log.e("BINDER STATUS:", "OK")
-                //service?.playOrPause("content://media/external/audio/media/511")
+                Log.i("API-> BINDER STATUS:", "OK")
             }
-            //
-            //service = ((PlayerService.PlayerBinder) binder).getService();
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            Log.e(context.packageName, "ServiceConnection::onServiceDisconnected() called")
+            Log.i(context.packageName, "ServiceConnection::onServiceDisconnected() called")
             service = null
             isServiceBound = false
             if (service == null) {
-                Log.e("BINDER STATUS:", "DC")
+                Log.i("API-> BINDER STATUS:", "DC")
             }
         }
     }

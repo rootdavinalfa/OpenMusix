@@ -1,19 +1,23 @@
+/*
+ * Copyright (c) 2020.
+ * Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+ * OpenMusix ,An open source music media player
+ * Under License Apache 2.0
+ * [This app does not contain any warranty]
+ *
+ */
+
 package xyz.dvnlabs.openmusix.ui.list
 
 import android.content.ContentUris
 import android.content.Context
-import android.content.SharedPreferences
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Nullable
-import androidx.annotation.RequiresApi
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -29,22 +33,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.core.KoinComponent
-import org.koin.core.inject
-import org.koin.core.parameter.parametersOf
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaData
-import xyz.dvnlabs.openmusix.data.MediaDataDB
-import xyz.dvnlabs.openmusix.data.MediaQueue
-import xyz.dvnlabs.openmusix.data.QueueDetail
+import xyz.dvnlabs.openmusix.data.MediaDB
 
 class MediaListAdapter(val itemResource: Int) :
     RecyclerView.Adapter<MediaListAdapter.ViewHolder>() {
-    private var mediaDB: MediaDataDB? = null
+    private var mediaDB: MediaDB? = null
     private var mediaList: List<MediaData> = emptyList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(this.itemResource, parent, false)
-        mediaDB = MediaDataDB.getDatabase(parent.context)
+        mediaDB = MediaDB.getDatabase(parent.context)
         return ViewHolder(view, parent.context)
     }
 

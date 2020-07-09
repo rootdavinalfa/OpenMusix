@@ -1,10 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020.
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
+  ~
+  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TextAppearance.Compat.Notification.Media"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -59,45 +67,48 @@
             android:orientation="horizontal"
             android:weightSum="3">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/notification_play_pause"
-                style="@style/TextAppearance.Compat.Notification.Media"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="20dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="?android:selectableItemBackground"
+                android:padding="8dp"
                 android:src="@drawable/exo_notification_play"
                 android:tint="@color/colorText"
                 app:layout_constraintEnd_toStartOf="@+id/notification_forward"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/notification_detail" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/notification_forward"
-                style="@style/TextAppearance.Compat.Notification.Media"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:padding="8dp"
                 android:layout_width="20dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="?android:selectableItemBackground"
                 android:src="@drawable/exo_notification_fastforward"
                 android:tint="@color/colorText"
                 app:layout_constraintEnd_toStartOf="@+id/notification_stop"
                 app:layout_constraintStart_toEndOf="@+id/notification_play_pause"
                 app:layout_constraintTop_toBottomOf="@+id/notification_detail" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/notification_stop"
-                style="@style/TextAppearance.Compat.Notification.Media"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:padding="8dp"
                 android:layout_width="20dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="?android:selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="?android:selectableItemBackground"
                 android:src="@drawable/exo_notification_stop"
                 android:tint="@color/colorText"
                 app:layout_constraintStart_toEndOf="@+id/notification_forward"
@@ -110,7 +121,7 @@
         android:layout_width="60dp"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:scaleType="fitXY"
+        android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

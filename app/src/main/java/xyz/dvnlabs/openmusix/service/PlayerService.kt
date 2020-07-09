@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2020.
+ * Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+ * OpenMusix ,An open source music media player
+ * Under License Apache 2.0
+ * [This app does not contain any warranty]
+ *
+ */
+
 package xyz.dvnlabs.openmusix.service
 
 import android.app.Service
@@ -5,6 +14,8 @@ import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -14,11 +25,17 @@ import android.os.Binder
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.provider.MediaStore
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
@@ -32,10 +49,11 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Log
 import com.google.android.exoplayer2.util.Util
+import jp.wasabeef.glide.transformations.BlurTransformation
 import org.greenrobot.eventbus.EventBus
-import xyz.dvnlabs.openmusix.event.PlayerBusError
-import xyz.dvnlabs.openmusix.event.PlayerBusStatus
-import xyz.dvnlabs.openmusix.event.PlayerData
+import xyz.dvnlabs.openmusix.data.MediaData
+import xyz.dvnlabs.openmusix.service.event.PlayerChange
+import xyz.dvnlabs.openmusix.service.event.RxBusEvent
 
 object PlaybackStatus {
     const val IDLE = "PlaybackStatus_IDLE"
@@ -47,11 +65,8 @@ object PlaybackStatus {
 }
 
 data class PlaylistQueue(
-    var streamURL: String,
     var tag: Long,
-    var albumID: Long,
-    var artistID: Long,
-    var title: String
+    var mediaData: MediaData
 )
 
 
@@ -72,7 +87,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     private var audioManager: AudioManager? = null
     private var status: String? = null
     private var streamUrl: String? = null
-    private var currentPlaylist: List<PlaylistQueue> = emptyList()
+    var currentPlaylist: List<PlaylistQueue> = emptyList()
     private var handler: Handler? = null
     private var notificationManager: PlayerNotification? = null
 
@@ -137,7 +152,19 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
         mediaSession!!.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
         mediaSession!!.setCallback(mediaSessionCallback)
         val stateBuilder = PlaybackStateCompat.Builder()
-            .setActions(PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_PAUSE)
+            .setActions(
+                PlaybackStateCompat.ACTION_SEEK_TO or
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+                        PlaybackStateCompat.ACTION_PLAY or
+                        PlaybackStateCompat.ACTION_PAUSE or
+                        PlaybackStateCompat.ACTION_STOP or
+                        PlaybackStateCompat.ACTION_PLAY_PAUSE
+            ).setState(
+                PlaybackStateCompat.STATE_PAUSED,
+                0,
+                1.0f
+            )
             .build()
         mediaSession!!.setPlaybackState(stateBuilder)
 
@@ -154,11 +181,10 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
 
     override fun run() {
         EventBus.getDefault().post(
-            PlayerData(
-                exoPlayer?.currentPosition!!,
-                exoPlayer!!.currentWindowIndex,
+            PlayerChange.CurrentData(
+                exoPlayer!!.currentPosition,
                 exoPlayer!!.duration,
-                exoPlayer!!.playbackState
+                exoPlayer!!.currentTag
             )
         )
         handler?.postDelayed(this, 500)
@@ -213,6 +239,13 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
             }
             ACTION_FORWARD -> {
                 exoPlayer?.seekTo(exoPlayer!!.nextWindowIndex, C.TIME_UNSET)
+                with(sharedPref?.edit()) {
+                    this?.putLong("file_id", (exoPlayer!!.currentTag as Long?)!!)
+                    this?.commit()
+                }
+            }
+            ACTION_REWIND -> {
+                exoPlayer?.seekTo(exoPlayer!!.previousWindowIndex, C.TIME_UNSET)
                 with(sharedPref?.edit()) {
                     this?.putLong("file_id", (exoPlayer!!.currentTag as Long?)!!)
                     this?.commit()
@@ -299,13 +332,13 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
             for (i in playList) {
                 val imageURL = ContentUris.withAppendedId(
                     Uri.parse("content://media/external/audio/albumart"),
-                    i.albumID
+                    i.mediaData.albumID
                 )
                 mediaMetadataCompat.putString(
                     MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
                     imageURL.toString()
                 )
-                mediaProgressive += buildMediaSource(Uri.parse(i.streamURL), i.tag)
+                mediaProgressive += buildMediaSource(Uri.parse(i.mediaData.contentURI), i.tag)
             }
             val metaData = mediaMetadataCompat.build()
             mediaSession?.setMetadata(metaData)
@@ -348,12 +381,13 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
                 PlaybackStatus.STOPPED
             }
             Player.STATE_IDLE -> PlaybackStatus.IDLE
-            Player.STATE_READY -> if (playWhenReady) PlaybackStatus.PLAYING else PlaybackStatus.PAUSED
+            Player.STATE_READY -> if (playWhenReady) {
+                PlaybackStatus.PLAYING
+            } else PlaybackStatus.PAUSED
             else -> PlaybackStatus.IDLE
         }
-        EventBus.getDefault().post(status?.let {
-            PlayerBusStatus(it)
-        })
+        updateMetaData()
+        RxBusEvent.publish(PlayerChange.OnPlayerStateChanged(status!!))
         notificationManager?.startNotify(status!!, exoPlayer!!.currentTag as Long?)
     }
 
@@ -384,9 +418,6 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
                 errorDetails = error.unexpectedException.message
             }
         }
-        EventBus.getDefault().post(errorDetails?.let {
-            PlayerBusError(it)
-        })
     }
 
     override fun onPositionDiscontinuity(reason: Int) {
@@ -396,6 +427,14 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
                     this?.putLong("file_id", (exoPlayer!!.currentTag as Long?)!!)
                     this?.commit()
                 }
+                RxBusEvent.publish(
+                    PlayerChange.OnTrackChange(
+                        exoPlayer!!.currentWindowIndex,
+                        exoPlayer!!.currentTag
+                    )
+                )
+                updateMetaData()
+                notificationManager?.startNotify(status!!, exoPlayer!!.currentTag as Long?)
             }
             Player.DISCONTINUITY_REASON_AD_INSERTION -> {
 
@@ -421,7 +460,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     }
 
     private fun buildMediaSource(uri: Uri): MediaSource {
-        val userAgent = Util.getUserAgent(applicationContext, "Animize")
+        val userAgent = Util.getUserAgent(applicationContext, "OpenMusix")
         val dataSourceFactory = DefaultDataSourceFactory(
             this, DefaultHttpDataSourceFactory(
                 userAgent, null, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
@@ -436,7 +475,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     }
 
     private fun buildMediaSource(uri: Uri, tag: Long): MediaSource {
-        val userAgent = Util.getUserAgent(applicationContext, "Animize")
+        val userAgent = Util.getUserAgent(applicationContext, "OpenMusix")
         val dataSourceFactory = DefaultDataSourceFactory(
             this, DefaultHttpDataSourceFactory(
                 userAgent, null, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
@@ -448,6 +487,79 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
         return ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory)
             .setTag(tag)
             .createMediaSource(uri)
+    }
+
+    private fun updateMetaData() {
+        if (currentPlaylist.isNotEmpty()) {
+            val currentSong = currentPlaylist[exoPlayer!!.currentWindowIndex]
+
+            val projection = arrayOf(
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.ARTIST
+            )
+            val selection = "${MediaStore.Audio.AudioColumns._ID} == ${currentSong.tag}"
+            val query = this.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection, selection, null, null
+            )
+            var album = ""
+            var artist = ""
+            query.use { x ->
+                val albumColumn =
+                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
+                val artistColumn =
+                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
+                while (x!!.moveToNext()) {
+                    album = query!!.getString(albumColumn!!)!!
+                    artist = query.getString(artistColumn!!)!!
+                }
+            }
+            val imageURL = ContentUris.withAppendedId(
+                Uri.parse("content://media/external/audio/albumart"),
+                currentSong.mediaData.albumID
+            )
+            val metaData = MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.mediaData.title)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+                .putString(
+                    MediaMetadataCompat.METADATA_KEY_COMPOSER,
+                    currentSong.mediaData.composer
+                )
+                .putLong(
+                    MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,
+                    currentSong.mediaData.track.toLong()
+                )
+                .putLong(MediaMetadataCompat.METADATA_KEY_YEAR, currentSong.mediaData.year.toLong())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, artist)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, exoPlayer!!.duration)
+            Glide.with(this)
+                .asBitmap()
+                .transform(BlurTransformation(5))
+                .thumbnail(0.25f)
+                .apply(
+                    RequestOptions()
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                )
+                .load(imageURL)
+                .into(object : CustomTarget<Bitmap?>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap?>?
+                    ) {
+                        metaData?.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, resource)
+                        mediaSession?.setMetadata(metaData.build())
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        super.onLoadFailed(errorDrawable)
+                        mediaSession?.setMetadata(metaData.build())
+                    }
+                })
+        }
     }
 
 }
