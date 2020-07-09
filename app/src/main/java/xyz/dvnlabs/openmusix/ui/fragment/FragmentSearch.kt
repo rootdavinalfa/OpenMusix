@@ -58,7 +58,7 @@ class FragmentSearch : FragmentHost() {
             val list = listVM.listMedia.value
             if (!text.isNullOrEmpty()) {
                 val filtered = list?.filter {
-                    "(?i)$text\\w".toRegex().containsMatchIn(it.title)
+                    "(?i)$text".toRegex().containsMatchIn(it.title)
                 }
                 adapter.setMediaList(filtered!!)
             } else {
