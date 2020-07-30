@@ -20,6 +20,9 @@ Don't upload this project to playstore or you will get the consequence!
 <span align="center"><img width="200px" height="360px" src="docs/ss1.jpg"></span>
 <span align="center"><img width="200px" height="360px" src="docs/ss2.jpg"></span>
 <span align="center"><img width="200px" height="360px" src="docs/ss3.jpg"></span>
+<span align="center"><img width="200px" height="360px" src="docs/ss4.jpg"></span>
+<span align="center"><img width="200px" height="360px" src="docs/ss5.jpg"></span>
+<span align="center"><img width="200px" height="360px" src="docs/ss6.jpg"></span>
 
 ## Technology Used By This Application
 This application can't be made without:
