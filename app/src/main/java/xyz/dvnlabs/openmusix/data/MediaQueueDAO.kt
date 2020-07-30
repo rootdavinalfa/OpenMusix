@@ -27,12 +27,6 @@ interface MediaQueueDAO {
     @Insert
     suspend fun newQueue(queue: MediaQueue): Long
 
-    @Query("UPDATE MediaQueue SET selected = 0")
-    suspend fun unSelectAll()
-
-    @Query("UPDATE MediaQueue SET selected = 1 WHERE uid = :queueID")
-    suspend fun changeSelected(queueID: Long)
-
     @Query("SELECT * FROM MediaQueue WHERE sys_generated = 0")
     suspend fun getQueueUser(): List<MediaQueue>
 

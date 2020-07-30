@@ -1,0 +1,60 @@
+<!--
+  ~ Copyright (c) 2020.
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
+  ~
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:pathData="m416,488h-320v-464h240l80,80z"
+        android:fillColor="#e9eef2" />
+    <path
+        android:pathData="m336,104h80l-80,-80z"
+        android:fillColor="#dadcde" />
+    <path
+        android:pathData="m384,256h-256a8,8 0,0 1,0 -16h256a8,8 0,0 1,0 16z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m384,192h-256a8,8 0,0 1,0 -16h256a8,8 0,0 1,0 16z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m264,128h-136a8,8 0,0 1,0 -16h136a8,8 0,0 1,0 16z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m384,320h-256a8,8 0,0 1,0 -16h256a8,8 0,0 1,0 16z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m384,384h-256a8,8 0,0 1,0 -16h256a8,8 0,0 1,0 16z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m288,448h-160a8,8 0,0 1,0 -16h160a8,8 0,0 1,0 16z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m168,320a24,24 0,1 1,24 -24,24.027 24.027,0 0,1 -24,24zM168,288a8,8 0,1 0,8 8,8.009 8.009,0 0,0 -8,-8z"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="m184,304a8,8 0,0 1,-8 -8v-80a8,8 0,0 1,16 0v80a8,8 0,0 1,-8 8z"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="m304,384a24,24 0,1 1,24 -24,24.027 24.027,0 0,1 -24,24zM304,352a8,8 0,1 0,8 8,8.009 8.009,0 0,0 -8,-8z"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="m320,368a8,8 0,0 1,-8 -8v-64a8,8 0,0 1,6.06 -7.761l64,-16a8,8 0,0 1,3.88 15.522l-57.94,14.485v57.754a8,8 0,0 1,-8 8z"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="m248,256a24,24 0,1 1,24 -24,24.027 24.027,0 0,1 -24,24zM248,224a8,8 0,1 0,8 8,8.009 8.009,0 0,0 -8,-8z"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="m312,240a24,24 0,1 1,24 -24,24.027 24.027,0 0,1 -24,24zM312,208a8,8 0,1 0,8 8,8.009 8.009,0 0,0 -8,-8z"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="m264,240a8,8 0,0 1,-8 -8v-80a8,8 0,0 1,6.06 -7.761l64,-16a8,8 0,0 1,9.94 7.761v80a8,8 0,0 1,-16 0v-69.754l-48,12v73.754a8,8 0,0 1,-8 8z"
+        android:fillColor="#3397e8" />
+</vector>

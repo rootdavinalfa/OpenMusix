@@ -9,11 +9,9 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/round_bg"
-    android:backgroundTint="@color/colorBackground"
+    android:background="@color/colorBackground"
     android:orientation="vertical">
 
     <net.cachapa.expandablelayout.ExpandableLayout
@@ -24,6 +22,7 @@
         android:focusable="true"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:padding="5dp"
+        app:el_parallax="1"
         app:el_expanded="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -95,7 +94,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
-        app:labelVisibilityMode="unlabeled"
+        style="@style/BnvStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorBackground"

@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright (c) 2020.
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
+  ~
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:pathData="M128,24L384,24A16,16 0,0 1,400 40L400,472A16,16 0,0 1,384 488L128,488A16,16 0,0 1,112 472L112,40A16,16 0,0 1,128 24z"
+        android:fillColor="#e9eef2" />
+    <path
+        android:pathData="m144,56h224v176h-224z"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="M256,360m-96,0a96,96 0,1 1,192 0a96,96 0,1 1,-192 0"
+        android:fillColor="#dadcde" />
+    <path
+        android:pathData="M256,360m-32,0a32,32 0,1 1,64 0a32,32 0,1 1,-64 0"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="M256,296m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="M256,424m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="M192,360m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="M320,360m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+        android:fillColor="#3397e8" />
+    <path
+        android:pathData="m224,184a8,8 0,0 1,-5.657 -13.657l64,-64a8,8 0,0 1,11.314 11.314l-64,64a7.974,7.974 0,0 1,-5.657 2.343z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m272,184a8,8 0,0 1,-5.657 -13.657l32,-32a8,8 0,0 1,11.314 11.314l-32,32a7.974,7.974 0,0 1,-5.657 2.343z"
+        android:fillColor="#a3d4f7" />
+    <path
+        android:pathData="m208,152a8,8 0,0 1,-5.657 -13.657l32,-32a8,8 0,0 1,11.314 11.314l-32,32a7.974,7.974 0,0 1,-5.657 2.343z"
+        android:fillColor="#a3d4f7" />
+</vector>

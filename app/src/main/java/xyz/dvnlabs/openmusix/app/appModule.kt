@@ -15,6 +15,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.ui.viewmodel.ListViewModel
+import xyz.dvnlabs.openmusix.ui.viewmodel.QuickListViewModel
 
 val appModule = module {
     single {
@@ -22,5 +23,9 @@ val appModule = module {
     }
     viewModel {
         ListViewModel(androidApplication())
+    }
+
+    viewModel {
+        QuickListViewModel(androidApplication())
     }
 }

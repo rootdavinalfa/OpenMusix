@@ -18,7 +18,7 @@
         android:id="@+id/seekBar"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="32dp"
         app:animateExpansion="true"
         app:chunkHeight="100dp"
         app:chunkRadius="3dp"
@@ -74,11 +74,12 @@
             android:tint="@color/white" />
 
         <ImageView
+            android:layout_centerInParent="true"
             android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause"
             android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/circle_bg"
+            android:layout_height="40dp"
+            android:background="@drawable/round_bg"
             android:backgroundTint="@color/blackTrans2"
             android:clickable="true"
             android:focusable="true"
@@ -122,7 +123,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/round_bg"
         android:backgroundTint="@color/blackTrans2"

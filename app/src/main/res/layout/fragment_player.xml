@@ -19,8 +19,9 @@
     <xyz.dvnlabs.openmusix.ui.custom.NewDiscreteScrollView
         android:id="@+id/playerList"
         android:layout_width="0dp"
-        android:layout_height="380dp"
+        android:layout_height="360dp"
         android:layout_marginTop="24dp"
+        android:overScrollMode="always"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -38,9 +39,10 @@
         app:layout_constraintTop_toBottomOf="@+id/playerList">
 
         <ImageView
+            android:id="@+id/playerShuffle"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="5dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:background="@drawable/round_bg"
             android:backgroundTint="@color/blackTrans2"
@@ -48,12 +50,13 @@
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:padding="5dp"
-            android:src="@drawable/exo_controls_shuffle_on" />
+            android:src="@drawable/exo_controls_shuffle_off" />
 
         <ImageView
+            android:id="@+id/playerRepeat"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="5dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:background="@drawable/round_bg"
             android:backgroundTint="@color/blackTrans2"
@@ -61,17 +64,17 @@
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:padding="5dp"
-            android:src="@drawable/exo_controls_repeat_all" />
+            android:src="@drawable/exo_controls_repeat_off" />
 
         <View
             android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/playerTimer"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="5dp"
+            android:layout_height="35dp"
             android:layout_weight="1"
             android:background="@drawable/round_bg"
             android:backgroundTint="@color/blackTrans2"
@@ -83,9 +86,11 @@
             android:tint="@color/white" />
 
         <ImageView
+            android:id="@+id/playerInfo"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="5dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
             android:layout_weight="1"
             android:background="@drawable/round_bg"
             android:backgroundTint="@color/blackTrans2"
@@ -102,7 +107,7 @@
         android:id="@+id/playerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         app:controller_layout_id="@layout/exo_playback_control_view"
         app:hide_on_touch="false"
         app:layout_constraintBottom_toBottomOf="parent"

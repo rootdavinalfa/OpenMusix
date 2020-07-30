@@ -16,12 +16,13 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.getColor
-import androidx.core.view.size
 import androidx.lifecycle.Observer
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -31,25 +32,18 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.yarolegovich.discretescrollview.transform.Pivot
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.ObservableEmitter
-import io.reactivex.rxjava3.schedulers.Schedulers
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.android.synthetic.main.exo_playback_control_view.view.*
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.databinding.FragmentPlayerBinding
-import xyz.dvnlabs.openmusix.service.PlayerManager
-import xyz.dvnlabs.openmusix.service.event.PlayerChange
+import xyz.dvnlabs.openmusix.service.OpenMusixAPI
 import xyz.dvnlabs.openmusix.ui.list.PlayingListAdapter
 import xyz.dvnlabs.openmusix.ui.viewmodel.ListViewModel
-import java.util.concurrent.TimeUnit
+import xyz.dvnlabs.openmusix.util.Converter
 
 class FragmentPlayer : FragmentHost() {
     private var binding: FragmentPlayerBinding? = null
@@ -66,21 +60,19 @@ class FragmentPlayer : FragmentHost() {
             FragmentPlayerBinding.bind(inflater.inflate(R.layout.fragment_player, container, false))
         val sharedPref = requireContext().getSharedPreferences("current", Context.MODE_PRIVATE)
 
-        Observable.create<Long> { emitter: ObservableEmitter<Long>? ->
+        /*Observable.create<Long> { emitter: ObservableEmitter<Long>? ->
             Schedulers.newThread().schedulePeriodicallyDirect({
                 val fileID = sharedPref.getLong("file_id", -1)
                 emitter?.onNext(fileID)
             }, 0, 500, TimeUnit.MILLISECONDS)
         }.observeOn(AndroidSchedulers.mainThread()).distinctUntilChanged().subscribe {
             listVM.changeFileID(it)
-        }
-        EventBus.getDefault().register(this)
+        }*/
         return binding?.root
     }
 
     override fun onDestroyView() {
         binding = null
-        EventBus.getDefault().unregister(this)
         super.onDestroyView()
     }
 
@@ -88,10 +80,6 @@ class FragmentPlayer : FragmentHost() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = PlayingListAdapter(R.layout.rv_now_play)
         binding?.playerList?.adapter = adapter
-        listVM.listMedia.observe(viewLifecycleOwner, Observer {
-            adapter.setMediaList(it)
-        })
-        binding?.playerList?.setItemViewCacheSize(0)
         binding?.playerList?.setItemTransformer(
             ScaleTransformer.Builder()
                 .setMaxScale(1.05f)
@@ -102,38 +90,63 @@ class FragmentPlayer : FragmentHost() {
         )
         binding?.playerView?.controllerHideOnTouch = false
         binding?.playerView?.showController()
-        binding?.playerView?.player = PlayerManager.service?.exoPlayer
-        if (PlayerManager.service?.isPlaying() == false) {
-            PlayerManager.service?.transportControls?.play()
-        }
+        binding?.playerView?.player = OpenMusixAPI.service?.exoPlayer
+
+        OpenMusixAPI.api?.currentQueue?.distinctUntilChanged()
+            ?.observe(viewLifecycleOwner, Observer {
+                val listQueue = Converter().convertQueueToMediaData(
+                    it
+                )
+                if (listQueue != null) {
+                    Log.i(this.javaClass.simpleName, "QUEUE: ${listQueue.size}")
+                    adapter.setMediaList(listQueue)
+                }
+            })
+
+
+        OpenMusixAPI.api?.liveDataChange?.observe(viewLifecycleOwner, Observer {
+            val progress = (it.currentPosition.toFloat() / it.currentDuration.toFloat()) * 100
+            view.let { v ->
+                v.seekBar?.progress = progress
+            }
+        })
+
+        OpenMusixAPI.api?.liveTrackChange?.observe(viewLifecycleOwner, Observer {
+            val fileID = it.currentTag as Long?
+            fileID?.let { it1 ->
+                listVM.changeFileID(it1)
+            }
+        })
 
         listVM.currentFileID.observe(viewLifecycleOwner, Observer {
             lifecycleScope.launch {
-                if (binding?.playerList?.size != 0 && it != -1L) {
+                if (it != -1L) {
                     bindData(it)
                 }
             }
         })
+
+
+
         binding?.playerList?.onItemMove = { currentPos, oldPos, byUser ->
             if (byUser) {
-                val media = listVM.listMedia.value?.get(currentPos)
-                val sharedPref =
-                    requireContext().getSharedPreferences("current", Context.MODE_PRIVATE)
-                with(sharedPref.edit()) {
-                    media?.fileID?.let { putLong("file_id", it) }
-                    commit()
+                if (currentPos != oldPos) {
+                    OpenMusixAPI.api?.playerToIndex(currentPos)
                 }
-                firstTime = true
             }
 
         }
+        repeatMode()
+        shuffleMode()
 
-        requireView().seekBar?.onProgressChanged = { progress, byUser ->
-            if (byUser) {
-                val duration = PlayerManager.service?.exoPlayer?.duration
-                val seek = duration?.times(progress.toLong())?.div(100)
-                seek?.let {
-                    PlayerManager.service?.exoPlayer?.seekTo(it)
+        view.let {
+            it.seekBar?.onProgressChanged = { progress, byUser ->
+                if (byUser) {
+                    val duration = OpenMusixAPI.service?.exoPlayer?.duration
+                    val seek = duration?.times(progress.toLong())?.div(100)
+                    seek?.let { it1 ->
+                        OpenMusixAPI.service?.exoPlayer?.seekTo(it1)
+                    }
                 }
             }
         }
@@ -145,60 +158,94 @@ class FragmentPlayer : FragmentHost() {
         super.onResume()
     }
 
-    private suspend fun bindData(fileID: Long) {
-        val mediaData = mediaDB.mediaDataDAO().getMedia()
-        val current = mediaData.singleOrNull { x ->
-            x.fileID == fileID
-        }
-        val nowIndex = mediaData.indexOf(current)
-        var detail = "Reached End Of Queue"
-        if (nowIndex < mediaData.size - 1) {
-            val next = mediaData[nowIndex + 1]
-            val projection = arrayOf(
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ARTIST
-            )
-            val selection = "${MediaStore.Audio.AudioColumns._ID} == ${next.fileID}"
-            val query = requireContext().contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, selection, null, null
-            )
-            query.use { x ->
-                val albumColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
-                val artistColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-                while (x!!.moveToNext()) {
-                    val album = query?.getString(albumColumn!!)
-                    val artist = query?.getString(artistColumn!!)
-                    detail = "${next.title} - $artist - $album"
+    private fun repeatMode() {
+        OpenMusixAPI.api?.currentRepeatMode?.observe(viewLifecycleOwner, Observer {
+            val icon: Int = when (it) {
+                OpenMusixAPI.REPEAT_MODE.ONE -> {
+                    R.drawable.exo_controls_repeat_one
                 }
+                OpenMusixAPI.REPEAT_MODE.OFF -> {
+                    R.drawable.exo_controls_repeat_off
+                }
+                OpenMusixAPI.REPEAT_MODE.ALL -> {
+                    R.drawable.exo_controls_repeat_all
+                }
+                else -> R.drawable.exo_controls_repeat_off
             }
-        }
-
-        val imageURL = ContentUris.withAppendedId(
-            Uri.parse("content://media/external/audio/albumart"),
-            current!!.albumID
-        )
-        requireView().exo_next_song?.text = detail
-        requireView().exo_count?.text = "${nowIndex + 1} / ${mediaData.size}"
-        attachImage(imageURL)
-        if (firstTime) {
-            binding?.playerList?.scrollToPosition(nowIndex)
-            lifecycleScope.launch {
-                val inputStream =
-                    requireContext().contentResolver.openInputStream(Uri.parse(current.contentURI))
-                requireView().seekBar?.setRawData(inputStream!!.readBytes())
-            }
-
-            firstTime = false
+            binding?.playerRepeat?.setImageDrawable(requireContext().getDrawable(icon))
+        })
+        binding?.playerRepeat?.setOnClickListener {
+            OpenMusixAPI.api?.changeRepeatMode()
         }
     }
 
-    @Subscribe
-    fun currentData(data: PlayerChange.CurrentData) {
-        val progress = (data.currentPosition.toFloat() / data.currentDuration.toFloat()) * 100
-        requireView().seekBar?.progress = progress
+    private fun shuffleMode() {
+        OpenMusixAPI.api?.currentShuffleMode?.observe(viewLifecycleOwner, Observer {
+            val icon: Int = when (it) {
+                OpenMusixAPI.SHUFFLE.ON -> {
+                    R.drawable.exo_controls_shuffle_on
+                }
+                OpenMusixAPI.SHUFFLE.OFF -> {
+                    R.drawable.exo_controls_shuffle_off
+                }
+                else -> R.drawable.exo_controls_repeat_off
+            }
+            binding?.playerShuffle?.setImageDrawable(requireContext().getDrawable(icon))
+        })
+        binding?.playerShuffle?.setOnClickListener {
+            OpenMusixAPI.api?.changeShuffleMode()
+        }
+    }
+
+    private suspend fun bindData(fileID: Long) {
+        OpenMusixAPI.api?.currentQueue?.let {
+            val medias = Converter().convertQueueToMediaData(it.value!!)
+            val mediaData = medias
+            mediaData?.let {
+                val current = mediaData.singleOrNull { x ->
+                    x.fileID == fileID
+                }
+                val nowIndex = mediaData.indexOf(current)
+                var detail = "Reached End Of Queue"
+                if (nowIndex < mediaData.size - 1) {
+                    val next = mediaData[nowIndex + 1]
+                    val projection = arrayOf(
+                        MediaStore.Audio.Media.ALBUM,
+                        MediaStore.Audio.Media.ARTIST
+                    )
+                    val selection = "${MediaStore.Audio.AudioColumns._ID} == ${next.fileID}"
+                    val query = requireContext().contentResolver.query(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        projection, selection, null, null
+                    )
+                    query.use { x ->
+                        val albumColumn =
+                            query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
+                        val artistColumn =
+                            query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
+                        while (x!!.moveToNext()) {
+                            val album = query?.getString(albumColumn!!)
+                            val artist = query?.getString(artistColumn!!)
+                            detail = "${next.title} - $artist - $album"
+                        }
+                    }
+                }
+
+                val imageURL = ContentUris.withAppendedId(
+                    Uri.parse("content://media/external/audio/albumart"),
+                    current!!.albumID
+                )
+                view?.exo_next_song?.text = detail
+                view?.exo_count?.text = "${nowIndex + 1} / ${mediaData.size}"
+                attachImage(imageURL)
+                binding?.playerList?.scrollToPosition(nowIndex)
+                lifecycleScope.launch {
+                    val inputStream =
+                        requireContext().contentResolver.openInputStream(Uri.parse(current.contentURI))
+                    view?.seekBar?.setRawData(inputStream!!.readBytes())
+                }
+            }
+        }
     }
 
     private fun attachImage(imageURL: Uri) {

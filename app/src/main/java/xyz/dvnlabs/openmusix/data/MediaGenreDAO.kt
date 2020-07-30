@@ -25,4 +25,7 @@ interface MediaGenreDAO {
     @Query("SELECT * FROM MediaGenre WHERE file_id = :id ORDER BY genre_name COLLATE NOCASE")
     suspend fun getGenre(id: Long): List<MediaGenre>
 
+    @Query("SELECT * FROM MediaGenre GROUP BY genre_id ORDER BY genre_name COLLATE NOCASE")
+    suspend fun getGenreMeta(): List<MediaGenre>
+
 }

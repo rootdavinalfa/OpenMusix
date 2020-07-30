@@ -11,12 +11,12 @@ package xyz.dvnlabs.openmusix.ui.list
 
 import android.content.ContentUris
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.annotation.Nullable
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -26,20 +26,19 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.rv_now_play.view.*
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import kotlinx.android.synthetic.main.rv_play_list.view.*
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.data.MediaData
+import xyz.dvnlabs.openmusix.service.OpenMusixAPI
 
-class PlayingListAdapter(private val itemResource: Int) :
-    RecyclerView.Adapter<PlayingListAdapter.ViewHolder>() {
+class PListAdapter(val itemResource: Int) :
+    RecyclerView.Adapter<PListAdapter.ViewHolder>() {
     private var mediaDB: MediaDB? = null
     private var mediaList: List<MediaData> = emptyList()
-    private var lastPosition: Int = 0
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): PlayingListAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(this.itemResource, parent, false)
         mediaDB = MediaDB.getDatabase(parent.context)
         return ViewHolder(view, parent.context)
@@ -49,7 +48,7 @@ class PlayingListAdapter(private val itemResource: Int) :
         return mediaList.size
     }
 
-    override fun onBindViewHolder(holder: PlayingListAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindItem()
     }
 
@@ -64,16 +63,16 @@ class PlayingListAdapter(private val itemResource: Int) :
     inner class ViewHolder(itemView: View, private val context: Context) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var media: MediaData? = null
-        val image = itemView.playerViewImage
-        val title: TextView = itemView.playerViewTitle
-        val detailText = itemView.playerViewDetail
+        val imageCover = itemView.listImage
+        val title = itemView.listTitle
+        val detailView = itemView.listDetail
 
         init {
-            image.setOnClickListener(this)
+            itemView.setOnClickListener(this)
         }
 
         fun bindItem() {
-            media = mediaList[bindingAdapterPosition]
+            media = mediaList[absoluteAdapterPosition]
             val projection = arrayOf(
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ARTIST
@@ -106,7 +105,7 @@ class PlayingListAdapter(private val itemResource: Int) :
                         .placeholder(R.drawable.ic_song)
                         .error(R.drawable.ic_song)
                 )
-                .load(imageURL).transform(RoundedCorners(10))
+                .load(imageURL).transform(RoundedCorners(30))
                 .transition(
                     DrawableTransitionOptions()
                         .crossFade()
@@ -114,15 +113,36 @@ class PlayingListAdapter(private val itemResource: Int) :
                     RequestOptions()
                         .override(600, 600)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
-                ).into(image)
+                ).into(object : CustomTarget<Drawable?>() {
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        transition: Transition<in Drawable?>?
+                    ) {
+                        imageCover.background = resource
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        imageCover.background = placeholder
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        imageCover.background = errorDrawable
+                    }
+
+                    override fun onLoadStarted(placeholder: Drawable?) {
+                        imageCover.background = placeholder
+                    }
+                })
+            detailView.text = detail
             title.text = media!!.title
-            detailText.text = detail
         }
 
         override fun onClick(v: View?) {
             val navController = itemView.findNavController()
-            navController.navigate(R.id.fragmentMenu)
+            OpenMusixAPI.api?.playDefault(media)
+            navController.navigate(R.id.fragmentPlayer)
         }
+
     }
 
     inner class MediaDiff(
@@ -151,4 +171,5 @@ class PlayingListAdapter(private val itemResource: Int) :
         }
 
     }
+
 }

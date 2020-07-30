@@ -11,12 +11,11 @@ package xyz.dvnlabs.openmusix.ui.list
 
 import android.content.ContentUris
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.annotation.Nullable
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -26,20 +25,19 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.rv_now_play.view.*
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import kotlinx.android.synthetic.main.rv_media.view.*
 import xyz.dvnlabs.openmusix.R
+import xyz.dvnlabs.openmusix.data.MediaAlbum
 import xyz.dvnlabs.openmusix.data.MediaDB
-import xyz.dvnlabs.openmusix.data.MediaData
+import xyz.dvnlabs.openmusix.ui.fragment.FragmentAlbumsDirections
 
-class PlayingListAdapter(private val itemResource: Int) :
-    RecyclerView.Adapter<PlayingListAdapter.ViewHolder>() {
+class AlbumListAdapter(val itemResource: Int) :
+    RecyclerView.Adapter<AlbumListAdapter.ViewHolder>() {
     private var mediaDB: MediaDB? = null
-    private var mediaList: List<MediaData> = emptyList()
-    private var lastPosition: Int = 0
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): PlayingListAdapter.ViewHolder {
+    private var mediaList: List<MediaAlbum> = emptyList()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(this.itemResource, parent, false)
         mediaDB = MediaDB.getDatabase(parent.context)
         return ViewHolder(view, parent.context)
@@ -49,11 +47,11 @@ class PlayingListAdapter(private val itemResource: Int) :
         return mediaList.size
     }
 
-    override fun onBindViewHolder(holder: PlayingListAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindItem()
     }
 
-    fun setMediaList(media: List<MediaData>) {
+    fun setMediaList(media: List<MediaAlbum>) {
         val diffCallback = MediaDiff(media, this.mediaList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.mediaList = media
@@ -63,37 +61,17 @@ class PlayingListAdapter(private val itemResource: Int) :
 
     inner class ViewHolder(itemView: View, private val context: Context) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        var media: MediaData? = null
-        val image = itemView.playerViewImage
-        val title: TextView = itemView.playerViewTitle
-        val detailText = itemView.playerViewDetail
+        var media: MediaAlbum? = null
+        val container = itemView.mediaContainer
+        val title = itemView.mediaTitle
+        val detailView = itemView.mediaDetail
 
         init {
-            image.setOnClickListener(this)
+            itemView.setOnClickListener(this)
         }
 
         fun bindItem() {
-            media = mediaList[bindingAdapterPosition]
-            val projection = arrayOf(
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ARTIST
-            )
-            val selection = "${MediaStore.Audio.AudioColumns._ID} == ${media!!.fileID}"
-            val query = context.contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, selection, null, null
-            )
-            var detail = ""
-            query.use { x ->
-                val albumColumn = query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
-                val artistColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-                while (x!!.moveToNext()) {
-                    val album = query?.getString(albumColumn!!)
-                    val artist = query?.getString(artistColumn!!)
-                    detail = "$artist - $album"
-                }
-            }
+            media = mediaList[absoluteAdapterPosition]
 
             val imageURL = ContentUris.withAppendedId(
                 Uri.parse("content://media/external/audio/albumart"),
@@ -106,7 +84,7 @@ class PlayingListAdapter(private val itemResource: Int) :
                         .placeholder(R.drawable.ic_song)
                         .error(R.drawable.ic_song)
                 )
-                .load(imageURL).transform(RoundedCorners(10))
+                .load(imageURL).transform(RoundedCorners(30))
                 .transition(
                     DrawableTransitionOptions()
                         .crossFade()
@@ -114,23 +92,52 @@ class PlayingListAdapter(private val itemResource: Int) :
                     RequestOptions()
                         .override(600, 600)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
-                ).into(image)
-            title.text = media!!.title
-            detailText.text = detail
+                ).into(object : CustomTarget<Drawable?>() {
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        transition: Transition<in Drawable?>?
+                    ) {
+                        container.background = resource
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        container.background = placeholder
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        container.background = errorDrawable
+                    }
+
+                    override fun onLoadStarted(placeholder: Drawable?) {
+                        container.background = placeholder
+                    }
+                })
+            detailView.text = media?.artistName
+            title.text = media?.albumName
         }
 
         override fun onClick(v: View?) {
             val navController = itemView.findNavController()
-            navController.navigate(R.id.fragmentMenu)
+            media?.albumID?.let {
+                val action =
+                    FragmentAlbumsDirections.actionFragmentAlbumsToFragmentAlbumDetail().setAlbumID(
+                        it
+                    )
+                navController.navigate(action)
+            }
+
+            /*OpenMusixAPI.api?.playDefault(media)
+            navController.navigate(R.id.fragmentPlayer)*/
         }
+
     }
 
     inner class MediaDiff(
-        private val newList: List<MediaData>,
-        private val oldList: List<MediaData>
+        private val newList: List<MediaAlbum>,
+        private val oldList: List<MediaAlbum>
     ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].fileID == newList[newItemPosition].fileID
+            return oldList[oldItemPosition].albumID == newList[newItemPosition].albumID
         }
 
         override fun getOldListSize(): Int {
@@ -151,4 +158,5 @@ class PlayingListAdapter(private val itemResource: Int) :
         }
 
     }
+
 }

@@ -19,7 +19,6 @@ import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
-import android.media.MediaMetadata
 import android.net.Uri
 import android.os.Binder
 import android.os.Build
@@ -47,10 +46,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.util.Log
 import com.google.android.exoplayer2.util.Util
 import jp.wasabeef.glide.transformations.BlurTransformation
-import org.greenrobot.eventbus.EventBus
 import xyz.dvnlabs.openmusix.data.MediaData
 import xyz.dvnlabs.openmusix.service.event.PlayerChange
 import xyz.dvnlabs.openmusix.service.event.RxBusEvent
@@ -87,7 +84,8 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     private var audioManager: AudioManager? = null
     private var status: String? = null
     private var streamUrl: String? = null
-    var currentPlaylist: List<PlaylistQueue> = emptyList()
+    var currentPlaylist: MutableList<PlaylistQueue> = arrayListOf()
+    var queueMediaSource: ConcatenatingMediaSource? = null
     private var handler: Handler? = null
     private var notificationManager: PlayerNotification? = null
 
@@ -180,7 +178,11 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     }
 
     override fun run() {
-        EventBus.getDefault().post(
+        with(sharedPref?.edit()) {
+            this?.putLong("position", exoPlayer!!.currentPosition)
+            this?.apply()
+        }
+        RxBusEvent.publish(
             PlayerChange.CurrentData(
                 exoPlayer!!.currentPosition,
                 exoPlayer!!.duration,
@@ -238,14 +240,15 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
                 notificationManager?.cancelNotify()
             }
             ACTION_FORWARD -> {
-                exoPlayer?.seekTo(exoPlayer!!.nextWindowIndex, C.TIME_UNSET)
+                println("NEXT: ${exoPlayer?.nextWindowIndex} CURRENT: ${exoPlayer?.currentWindowIndex}")
+                exoPlayer?.seekTo(exoPlayer!!.nextWindowIndex, 0)
                 with(sharedPref?.edit()) {
                     this?.putLong("file_id", (exoPlayer!!.currentTag as Long?)!!)
                     this?.commit()
                 }
             }
             ACTION_REWIND -> {
-                exoPlayer?.seekTo(exoPlayer!!.previousWindowIndex, C.TIME_UNSET)
+                exoPlayer?.seekTo(exoPlayer!!.previousWindowIndex, 0)
                 with(sharedPref?.edit()) {
                     this?.putLong("file_id", (exoPlayer!!.currentTag as Long?)!!)
                     this?.commit()
@@ -310,44 +313,31 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
         exoPlayer!!.playWhenReady = true
     }
 
-    fun playOrPause(uri: String?) {
-        if (uri != null) {
-            Log.e("STREAM-OK:", uri)
-            if (streamUrl != null && streamUrl == uri) {
-                play()
-            } else {
-                //Log.e("Service",urli);
-                init(uri)
-
-            }
-        }
-
-    }
-
     fun addPlayList(playList: List<PlaylistQueue>) {
         if (playList.isNotEmpty() && playList.size != currentPlaylist.size) {
-            var mediaSource: MediaSource? = null
+            val mediaSource: MediaSource?
             var mediaProgressive: Array<MediaSource> = emptyArray()
-            val mediaMetadataCompat = MediaMetadataCompat.Builder()
             for (i in playList) {
-                val imageURL = ContentUris.withAppendedId(
-                    Uri.parse("content://media/external/audio/albumart"),
-                    i.mediaData.albumID
-                )
-                mediaMetadataCompat.putString(
-                    MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
-                    imageURL.toString()
-                )
                 mediaProgressive += buildMediaSource(Uri.parse(i.mediaData.contentURI), i.tag)
             }
-            val metaData = mediaMetadataCompat.build()
-            mediaSession?.setMetadata(metaData)
             mediaSource = ConcatenatingMediaSource(*mediaProgressive)
             mediaSource.let {
                 exoPlayer!!.prepare(it)
-                currentPlaylist = playList
+                currentPlaylist = playList.toMutableList()
                 //exoPlayer!!.playWhenReady = true
             }
+        }
+    }
+
+    fun addQueue(media: MediaData) {
+        val mediaSource: MediaSource?
+        var mediaProgressive: Array<MediaSource> = emptyArray()
+        mediaProgressive += buildMediaSource(Uri.parse(media.contentURI), media.fileID)
+        mediaSource = ConcatenatingMediaSource(*mediaProgressive)
+        mediaSource.let {
+            exoPlayer!!.prepare(it)
+            currentPlaylist.add(PlaylistQueue(media.fileID, media))
+            //exoPlayer!!.playWhenReady = true
         }
     }
 
@@ -382,6 +372,16 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
             }
             Player.STATE_IDLE -> PlaybackStatus.IDLE
             Player.STATE_READY -> if (playWhenReady) {
+                val repeatMode = OpenMusixAPI.api?.currentRepeatMode?.value
+                repeatMode?.let {
+                    OpenMusixAPI.api?.changeRepeat(repeatMode)
+                }
+                RxBusEvent.publish(
+                    PlayerChange.OnTrackChange(
+                        exoPlayer!!.currentWindowIndex,
+                        exoPlayer!!.currentTag
+                    )
+                )
                 PlaybackStatus.PLAYING
             } else PlaybackStatus.PAUSED
             else -> PlaybackStatus.IDLE
@@ -392,11 +392,11 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     }
 
     override fun onRepeatModeChanged(repeatMode: Int) {
-
+        exoPlayer?.repeatMode = repeatMode
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-
+        exoPlayer?.shuffleModeEnabled = shuffleModeEnabled
     }
 
     override fun onPlayerError(error: ExoPlaybackException) {

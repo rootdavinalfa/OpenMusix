@@ -14,18 +14,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import xyz.dvnlabs.openmusix.R
-import xyz.dvnlabs.openmusix.databinding.FragmentSettingBinding
+import xyz.dvnlabs.openmusix.databinding.FragmentEqualizerBinding
 
-class FragmentSetting : FragmentHost() {
-    private var binding: FragmentSettingBinding? = null
+class FragmentEqualizer : FragmentHost() {
+    private var binding: FragmentEqualizerBinding? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSettingBinding.bind(
+        binding = FragmentEqualizerBinding.bind(
             inflater.inflate(
-                R.layout.fragment_setting,
+                R.layout.fragment_equalizer,
                 container,
                 false
             )

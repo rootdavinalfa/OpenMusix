@@ -1,0 +1,54 @@
+<!--
+  ~ Copyright (c) 2020.
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
+  ~
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:pathData="m176,72h-16v-32h43.305a32,32 0,0 1,31.811 28.525l35.5,325a16,16 0,0 0,15.934 14.475h1.45a16,16 0,0 0,16 -16v-136l96,64v72a96.008,96.008 0,0 1,-96 96h-16a96,96 0,0 1,-96 -96v-304a16,16 0,0 0,-16 -16z"
+        android:fillColor="#ffd33a" />
+    <path
+        android:pathData="m432,313.373 l-128,-89.373 -16,24 128,88z"
+        android:fillColor="#f7b030" />
+    <path
+        android:pathData="m80,72h80v-48h-48l-32,16z"
+        android:fillColor="#f7b030" />
+    <path
+        android:pathData="M328,336m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"
+        android:fillColor="#f7b030" />
+    <path
+        android:pathData="M328,384m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"
+        android:fillColor="#f7b030" />
+    <path
+        android:pathData="m248,136h-24a8,8 0,0 1,0 -16h24a8,8 0,0 1,0 16z"
+        android:fillColor="#eba72e" />
+    <path
+        android:pathData="m248,200h-24a8,8 0,0 1,0 -16h24a8,8 0,0 1,0 16z"
+        android:fillColor="#eba72e" />
+    <path
+        android:pathData="m248,264h-24a8,8 0,0 1,0 -16h24a8,8 0,0 1,0 16z"
+        android:fillColor="#eba72e" />
+    <path
+        android:pathData="m248,328h-24a8,8 0,0 1,0 -16h24a8,8 0,0 1,0 16z"
+        android:fillColor="#eba72e" />
+    <path
+        android:pathData="M256,128m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0"
+        android:fillColor="#f7b030" />
+    <path
+        android:pathData="M256,192m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0"
+        android:fillColor="#f7b030" />
+    <path
+        android:pathData="M256,256m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0"
+        android:fillColor="#f7b030" />
+    <path
+        android:pathData="M256,320m-16,0a16,16 0,1 1,32 0a16,16 0,1 1,-32 0"
+        android:fillColor="#f7b030" />
+</vector>

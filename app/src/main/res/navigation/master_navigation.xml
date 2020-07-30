@@ -9,13 +9,14 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/master_nvaigation"
-    app:startDestination="@id/fragmentLibrary">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/master_navigation"
+    app:startDestination="@id/fragmentMenu">
 
     <fragment
-        android:id="@+id/fragmentLibrary"
-        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentLibrary"
-        android:label="Library">
+        android:id="@+id/fragmentMenu"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentMenu"
+        android:label="Menu">
         <action
             android:id="@+id/action_fragmentLibrary_to_fragmentSearch"
             app:destination="@id/fragmentSearch" />
@@ -25,6 +26,15 @@
         <action
             android:id="@+id/action_fragmentLibrary_to_fragmentSetting"
             app:destination="@id/fragmentSetting" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentLibrary"
+            app:destination="@id/fragmentLibrary" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentEqualizer"
+            app:destination="@id/fragmentEqualizer" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentAlbums"
+            app:destination="@id/fragmentAlbums" />
     </fragment>
     <fragment
         android:id="@+id/fragmentSearch"
@@ -38,4 +48,29 @@
         android:id="@+id/fragmentSetting"
         android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentSetting"
         android:label="Setting" />
+    <fragment
+        android:id="@+id/fragmentLibrary"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentLibrary"
+        android:label="Library" />
+    <fragment
+        android:id="@+id/fragmentEqualizer"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentEqualizer"
+        android:label="Equalizer" />
+    <fragment
+        android:id="@+id/fragmentAlbums"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentAlbums"
+        android:label="Albums">
+        <action
+            android:id="@+id/action_fragmentAlbums_to_fragmentAlbumDetail"
+            app:destination="@id/fragmentAlbumDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentAlbumDetail"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentAlbumDetail"
+        android:label="Detail">
+        <argument
+            android:name="albumID"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
 </navigation>

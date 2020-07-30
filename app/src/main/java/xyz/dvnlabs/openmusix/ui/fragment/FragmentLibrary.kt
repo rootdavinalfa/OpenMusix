@@ -14,11 +14,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.size
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import xyz.dvnlabs.openmusix.R
@@ -57,7 +55,7 @@ class FragmentLibrary : FragmentHost() {
             adapter.setMediaList(x)
         })
 
-        if (firstTime && binding?.libraryList?.size != 0) {
+        if (binding?.libraryList?.size != 0) {
             val sharedPref =
                 requireContext().getSharedPreferences("current", Context.MODE_PRIVATE)
             val fileID = sharedPref.getLong("file_id", -1)
@@ -65,7 +63,6 @@ class FragmentLibrary : FragmentHost() {
             val current = data!!.singleOrNull { it.fileID == fileID }
             val index = data.indexOf(current)
             binding?.libraryList?.smoothScrollToPosition(index)
-            firstTime = false
         }
 
         var checkScrollUp = false
@@ -85,6 +82,7 @@ class FragmentLibrary : FragmentHost() {
             }
         })
         binding?.libraryRefresh?.setOnClickListener {
+            Toast.makeText(requireContext(), "Refreshing Libraries", Toast.LENGTH_SHORT).show()
             MediaScannerWorker.setupTaskImmediately(requireContext())
         }
 
@@ -92,13 +90,11 @@ class FragmentLibrary : FragmentHost() {
     }
 
     override fun onResume() {
-        firstTime = true
         super.onResume()
     }
 
 
     override fun onDestroyView() {
-        binding = null
         super.onDestroyView()
     }
 }

@@ -19,7 +19,7 @@ import androidx.navigation.ui.NavigationUI
 import xyz.dvnlabs.openmusix.R
 
 open class FragmentHost : Fragment() {
-    private val appBarConfig = AppBarConfiguration(setOf(R.id.fragmentLibrary))
+    private val appBarConfig = AppBarConfiguration(setOf(R.id.fragmentMenu))
     private lateinit var toolbar: Toolbar
 
     override fun onStart() {
@@ -34,10 +34,12 @@ open class FragmentHost : Fragment() {
     private fun visibilityNavElements(navController: NavController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.fragmentLibrary -> toolbar.visibility = View.GONE
+                R.id.fragmentMenu -> toolbar.visibility = View.GONE
                 R.id.fragmentSearch -> toolbar.visibility = View.GONE
                 R.id.fragmentPlayer -> toolbar.visibility = View.GONE
                 R.id.fragmentSetting -> toolbar.visibility = View.GONE
+                R.id.fragmentAlbums -> toolbar.visibility = View.GONE
+                R.id.fragmentLibrary -> toolbar.visibility = View.GONE
                 else -> toolbar.visibility = View.VISIBLE
             }
         }

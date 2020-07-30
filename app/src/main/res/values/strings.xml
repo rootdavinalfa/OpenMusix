@@ -9,4 +9,5 @@
 
 <resources>
     <string name="app_name">OpenMusix</string>
+    <string name="service_description">OpenMusix playback service, used for controlling the player, queue, and others</string>
 </resources>

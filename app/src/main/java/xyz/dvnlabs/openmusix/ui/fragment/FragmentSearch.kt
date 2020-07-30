@@ -14,16 +14,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
-import xyz.dvnlabs.openmusix.data.MediaData
 import xyz.dvnlabs.openmusix.databinding.FragmentSearchBinding
 import xyz.dvnlabs.openmusix.ui.list.MediaListAdapter
 import xyz.dvnlabs.openmusix.ui.viewmodel.ListViewModel
 import xyz.dvnlabs.openmusix.util.view.AutoGridLayoutManager
-import java.util.regex.Pattern
 
 class FragmentSearch : FragmentHost() {
     private var binding: FragmentSearchBinding? = null
@@ -55,14 +55,16 @@ class FragmentSearch : FragmentHost() {
             } else {
                 binding?.searchClear?.visibility = View.VISIBLE
             }
-            val list = listVM.listMedia.value
-            if (!text.isNullOrEmpty()) {
-                val filtered = list?.filter {
-                    "(?i)$text".toRegex().containsMatchIn(it.title)
+            lifecycleScope.launch {
+                val list = mediaDB.mediaDataDAO().getMedia()
+                if (!text.isNullOrEmpty()) {
+                    val filtered = list?.filter {
+                        "(?i)$text".toRegex().containsMatchIn(it.title)
+                    }
+                    adapter.setMediaList(filtered!!)
+                } else {
+                    adapter.setMediaList(emptyList())
                 }
-                adapter.setMediaList(filtered!!)
-            } else {
-                adapter.setMediaList(emptyList())
             }
         }
         binding?.searchClear?.setOnClickListener {

@@ -29,13 +29,10 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.android.synthetic.main.rv_media.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import xyz.dvnlabs.openmusix.R
-import xyz.dvnlabs.openmusix.data.MediaData
 import xyz.dvnlabs.openmusix.data.MediaDB
+import xyz.dvnlabs.openmusix.data.MediaData
+import xyz.dvnlabs.openmusix.service.OpenMusixAPI
 
 class MediaListAdapter(val itemResource: Int) :
     RecyclerView.Adapter<MediaListAdapter.ViewHolder>() {
@@ -142,19 +139,8 @@ class MediaListAdapter(val itemResource: Int) :
 
         override fun onClick(v: View?) {
             val navController = itemView.findNavController()
-            GlobalScope.launch {
-                withContext(Dispatchers.IO) {
-                    val sharedPref = context.getSharedPreferences("current", Context.MODE_PRIVATE)
-                    withContext(Dispatchers.Main) {
-                        with(sharedPref.edit()) {
-                            putLong("file_id", media!!.fileID)
-                            commit()
-                        }
-                        navController.navigate(R.id.fragmentPlayer)
-                    }
-                }
-
-            }
+            OpenMusixAPI.api?.playDefault(media)
+            navController.navigate(R.id.fragmentPlayer)
         }
 
     }
