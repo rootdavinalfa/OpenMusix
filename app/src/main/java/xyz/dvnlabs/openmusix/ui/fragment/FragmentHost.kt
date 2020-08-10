@@ -39,7 +39,11 @@ open class FragmentHost : Fragment() {
                 R.id.fragmentPlayer -> toolbar.visibility = View.GONE
                 R.id.fragmentSetting -> toolbar.visibility = View.GONE
                 R.id.fragmentAlbums -> toolbar.visibility = View.GONE
+                R.id.fragmentAlbumDetail -> toolbar.visibility = View.GONE
                 R.id.fragmentLibrary -> toolbar.visibility = View.GONE
+                R.id.fragmentEqualizer -> toolbar.visibility = View.GONE
+                R.id.fragmentGenre -> toolbar.visibility = View.GONE
+                R.id.fragmentGenreDetail -> toolbar.visibility = View.GONE
                 else -> toolbar.visibility = View.VISIBLE
             }
         }

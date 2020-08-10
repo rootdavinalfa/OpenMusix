@@ -9,10 +9,7 @@
 
 package xyz.dvnlabs.openmusix.data
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface MediaDataDAO {
@@ -49,4 +46,7 @@ interface MediaDataDAO {
     @Query("UPDATE MediaData SET played_count = played_count + 1 WHERE file_id = :file")
     suspend fun addPlayedCount(file: Long)
 
+    @Transaction
+    @Query("SELECT * FROM MediaData INNER JOIN MediaGenre ON MediaData.file_id = MediaGenre.file_id AND MediaGenre.genre_id = :genre")
+    suspend fun getMediaDataByGenre(genre: Long): List<MediaDataGenre>
 }

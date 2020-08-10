@@ -9,9 +9,12 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/playerNavContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorBackground"
+    android:backgroundTint="@color/blackTrans2"
+    android:backgroundTintMode="src_atop"
     android:orientation="vertical">
 
     <net.cachapa.expandablelayout.ExpandableLayout
@@ -59,7 +62,7 @@
                     android:fontFamily="sans-serif-light"
                     android:maxLines="2"
                     android:text="Itsuka kawaru saisfiha asifhi asfihih made asdsaiihs "
-                    android:textColor="@color/colorText"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:typeface="serif" />
@@ -71,7 +74,7 @@
                     android:fontFamily="sans-serif-condensed-light"
                     android:maxLines="1"
                     android:text="Itsuka kawaru made asdsaiihsaifhishafihi"
-                    android:textColor="@color/colorText" />
+                    android:textColor="@color/white" />
             </LinearLayout>
 
             <ImageView
@@ -85,7 +88,7 @@
                 android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="fitXY"
                 android:src="@drawable/exo_icon_play"
-                android:tint="@color/colorText"
+                android:tint="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -97,7 +100,7 @@
         style="@style/BnvStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorBackground"
+        android:background="@color/colorBackgroundAll"
         app:menu="@menu/bottom_menu" />
 
 </LinearLayout>

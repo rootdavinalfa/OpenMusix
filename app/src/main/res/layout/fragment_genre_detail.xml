@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020.
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
+  ~
+  -->
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp">
+
+            <TextView
+                android:id="@+id/genreName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:maxLines="1"
+                android:padding="5dp"
+                tools:text="safsafsafsafsaf"
+                android:textColor="@color/colorText"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/genrePlay"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/circle_bg"
+                android:backgroundTint="@color/blackTrans"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/actionBarItemBackground"
+                android:src="@drawable/exo_controls_play"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/genreList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/rv_play_list" />
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

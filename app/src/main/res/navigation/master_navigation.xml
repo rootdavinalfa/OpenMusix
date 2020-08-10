@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_fragmentMenu_to_fragmentAlbums"
             app:destination="@id/fragmentAlbums" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentGenre"
+            app:destination="@id/fragmentGenre" />
     </fragment>
     <fragment
         android:id="@+id/fragmentSearch"
@@ -70,6 +73,23 @@
         android:label="Detail">
         <argument
             android:name="albumID"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentGenre"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentGenre"
+        android:label="Genre">
+        <action
+            android:id="@+id/action_fragmentGenre_to_fragmentGenreDetail"
+            app:destination="@id/fragmentGenreDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentGenreDetail"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentGenreDetail"
+        android:label="Detail">
+        <argument
+            android:name="genreID"
             app:argType="long"
             android:defaultValue="-1L" />
     </fragment>

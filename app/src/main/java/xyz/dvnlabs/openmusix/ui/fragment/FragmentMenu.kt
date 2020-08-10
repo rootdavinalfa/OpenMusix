@@ -53,6 +53,9 @@ class FragmentMenu : FragmentHost() {
         binding?.menuAlbum?.setOnClickListener {
             navController.navigate(R.id.fragmentAlbums)
         }
+        binding?.menuGenre?.setOnClickListener {
+            navController.navigate(R.id.fragmentGenre)
+        }
         val adapter = MediaListAdapter(R.layout.rv_media)
         val layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)

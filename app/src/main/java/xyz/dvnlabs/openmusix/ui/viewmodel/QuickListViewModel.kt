@@ -18,6 +18,7 @@ import org.koin.core.inject
 import org.koin.core.parameter.parametersOf
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.data.MediaData
+import xyz.dvnlabs.openmusix.data.MediaGenre
 
 class QuickListViewModel(application: Application) : AndroidViewModel(application), KoinComponent {
     private val mediaDB: MediaDB by inject { parametersOf(application) }
@@ -42,6 +43,18 @@ class QuickListViewModel(application: Application) : AndroidViewModel(applicatio
         while (true) {
             delay(500)
             val recent = mediaDB.mediaDataDAO().getTopPlayed()
+            emit(recent)
+        }
+    }
+
+    private val _genre =
+        fetchGenre().asLiveData(viewModelScope.coroutineContext).distinctUntilChanged()
+    val genre: LiveData<List<MediaGenre>> = _genre
+
+    private fun fetchGenre() = flow {
+        while (true) {
+            delay(500)
+            val recent = mediaDB.mediaGenreDAO().getGenreMeta()
             emit(recent)
         }
     }

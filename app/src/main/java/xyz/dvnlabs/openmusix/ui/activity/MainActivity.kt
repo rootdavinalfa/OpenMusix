@@ -13,6 +13,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -25,11 +26,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -96,6 +101,16 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                     }
                 }
                 R.id.fragmentAlbumDetail -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
+                R.id.fragmentGenre -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
+                R.id.fragmentGenreDetail -> {
                     if (fileID != -1L) {
                         binding.playerLayout.playerExpand.isExpanded = true
                     }
@@ -212,6 +227,44 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                         RequestOptions()
                             .override(600, 600)
                     ).into(binding.playerLayout.playerArt)
+
+                Glide.with(this@MainActivity)
+                    .applyDefaultRequestOptions(
+                        RequestOptions()
+                            .placeholder(R.drawable.ic_song)
+                            .error(R.drawable.ic_song)
+                    )
+                    .load(imageURL).transform(BlurTransformation(50, 5))
+                    .transition(
+                        DrawableTransitionOptions()
+                            .crossFade()
+                    ).apply(
+                        RequestOptions()
+                            .override(600, 600)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    ).into(object : CustomTarget<Drawable?>() {
+                        override fun onResourceReady(
+                            resource: Drawable,
+                            transition: Transition<in Drawable?>?
+                        ) {
+                            binding.playerLayout.playerNavContainer.background = resource
+                        }
+
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                            binding.playerLayout.playerNavContainer.background =
+                                this@MainActivity.getDrawable(R.color.colorBackgroundAll)
+                        }
+
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
+                            binding.playerLayout.playerNavContainer.background =
+                                this@MainActivity.getDrawable(R.color.colorBackgroundAll)
+                        }
+
+                        override fun onLoadStarted(placeholder: Drawable?) {
+                            binding.playerLayout.playerNavContainer.background =
+                                this@MainActivity.getDrawable(R.color.colorBackgroundAll)
+                        }
+                    })
             }
         }
     }
