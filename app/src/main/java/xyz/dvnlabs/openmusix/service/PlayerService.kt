@@ -10,10 +10,7 @@
 package xyz.dvnlabs.openmusix.service
 
 import android.app.Service
-import android.content.ContentUris
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
@@ -30,6 +27,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -82,6 +80,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     private var mediaConnector: MediaSessionConnector? = null
     private var sharedPref: SharedPreferences? = null
     private var audioManager: AudioManager? = null
+    private var audioAttributes: AudioAttributes? = null
     private var status: String? = null
     private var streamUrl: String? = null
     var currentPlaylist: MutableList<PlaylistQueue> = arrayListOf()
@@ -89,6 +88,8 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     private var handler: Handler? = null
     private var notificationManager: PlayerNotification? = null
 
+    private val intentFilterNoisy = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+    private val audioOutputDetector = AudioOutputDetector()
 
     var exoPlayer: SimpleExoPlayer? = null
     private val playerBinder = PlayerBinder()
@@ -117,6 +118,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
         exoPlayer!!.release()
         exoPlayer!!.removeListener(this)
         mediaSession!!.release()
+        unregisterReceiver(audioOutputDetector)
         super.onDestroy()
     }
 
@@ -166,8 +168,32 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
             .build()
         mediaSession!!.setPlaybackState(stateBuilder)
 
+        audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .build()
+
+        //Set AudioFocus
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioManager!!.requestAudioFocus(
+                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                    .setAudioAttributes(
+                        audioAttributes!!
+                    )
+                    .setAcceptsDelayedFocusGain(true)
+                    .setOnAudioFocusChangeListener(this)
+                    .build()
+            )
+        } else {
+            audioManager!!.requestAudioFocus(
+                this,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN
+            )
+        }
+
         val rendererFactory =
-            DefaultRenderersFactory(this).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
+            DefaultRenderersFactory(this).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
         exoPlayer = SimpleExoPlayer.Builder(this, rendererFactory).build()
         exoPlayer!!.addListener(this)
         status = PlaybackStatus.IDLE
@@ -175,6 +201,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
         mediaConnector = MediaSessionConnector(mediaSession!!)
         mediaConnector?.setPlayer(exoPlayer)
         transportControls = mediaSession!!.controller.transportControls
+        registerReceiver(audioOutputDetector, intentFilterNoisy)
     }
 
     override fun run() {
@@ -193,37 +220,11 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(this.javaClass.simpleName, "OnStartCommand")
         val action = intent!!.action
 
         if (TextUtils.isEmpty(action))
             return START_NOT_STICKY
-
-        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioManager!!.requestAudioFocus(
-                AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                    .setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build()
-                    )
-                    .setAcceptsDelayedFocusGain(true)
-                    .setOnAudioFocusChangeListener {
-                    }
-                    .build()
-            )
-        } else {
-            audioManager!!.requestAudioFocus(
-                this,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN
-            )
-        }
-
-        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            stop()
-            return START_NOT_STICKY
-        }
         when (action!!) {
             ACTION_PLAY -> {
                 transportControls!!.play()
@@ -263,15 +264,21 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
                 exoPlayer!!.volume = 1f
-                //resume()
+                exoPlayer?.playWhenReady = true
             }
 
-            AudioManager.AUDIOFOCUS_LOSS -> stop()
+            AudioManager.AUDIOFOCUS_LOSS -> {
+                if (isPlaying()) pause()
+            }
 
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> if (isPlaying()) pause()
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+                if (isPlaying()) pause()
+            }
 
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> if (isPlaying())
-                exoPlayer!!.volume = 0.1f
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                if (isPlaying())
+                    exoPlayer!!.volume = 0.4f
+            }
         }
     }
 
@@ -297,6 +304,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     }
 
     fun stop() {
+        Log.i(this.javaClass.simpleName, "Player Stopped")
         exoPlayer!!.stop()
         exoPlayer!!.release()
 

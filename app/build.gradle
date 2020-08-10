@@ -69,6 +69,7 @@ dependencies {
     //RxKotlin
     implementation("io.reactivex.rxjava3:rxkotlin:3.0.0")
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation fileTree(dir: 'src/main/libs', include: ['*.aar', '*.jar'], exclude: [])
 
     //Koin injector
     def koin_version= "2.1.6"
@@ -109,6 +110,7 @@ dependencies {
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
     implementation 'com.yarolegovich:discrete-scrollview:1.4.9'
     implementation 'com.eightbitlab:blurview:1.6.3'
+    implementation 'com.github.Jay-Goo:RangeSeekBar:v3.0.0'
 
     def lifecycle_version = "2.2.0"
     def arch_version = "2.1.0"

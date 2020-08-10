@@ -236,7 +236,7 @@ class FragmentPlayer : FragmentHost() {
                     current!!.albumID
                 )
                 view?.exo_next_song?.text = detail
-                view?.exo_count?.text = "${nowIndex + 1} / ${mediaData.size}"
+                binding?.exoCount?.text = "${nowIndex + 1} / ${mediaData.size}"
                 attachImage(imageURL)
                 binding?.playerList?.scrollToPosition(nowIndex)
                 lifecycleScope.launch {

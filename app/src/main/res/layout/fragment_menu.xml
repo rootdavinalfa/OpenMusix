@@ -20,15 +20,14 @@
         android:background="@color/colorBackgroundAll">
 
         <TextView
+            style="@style/TextHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="43dp"
             android:layout_marginEnd="8dp"
             android:text="OpenMusix!"
-            android:textColor="@color/colorText"
             android:textSize="24sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -48,13 +47,12 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/TextHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:text="Quick Access"
-                android:textColor="@color/colorText"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -153,15 +151,14 @@
                 tools:listitem="@layout/rv_media" />
 
             <TextView
+                style="@style/TextHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="sans-serif-light"
                 android:text="Top Played"
-                android:textColor="@color/colorText"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/menuTopList"
@@ -172,15 +169,14 @@
                 tools:listitem="@layout/rv_play_list" />
 
             <TextView
+                style="@style/TextHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="sans-serif-light"
                 android:text="Playlist"
-                android:textColor="@color/colorText"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <View
                 android:layout_width="match_parent"

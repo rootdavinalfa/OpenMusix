@@ -19,24 +19,28 @@
     <xyz.dvnlabs.openmusix.ui.custom.NewDiscreteScrollView
         android:id="@+id/playerList"
         android:layout_width="0dp"
-        android:layout_height="360dp"
+        android:layout_height="0dp"
         android:layout_marginTop="24dp"
         android:overScrollMode="always"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_weight="3"
         tools:listitem="@layout/rv_now_play" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="5"
+        app:layout_constraintBottom_toTopOf="@+id/playerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playerList">
+        app:layout_constraintTop_toBottomOf="@+id/playerList"
+        app:layout_constraintVertical_weight="1">
 
         <ImageView
             android:id="@+id/playerShuffle"
@@ -66,10 +70,23 @@
             android:padding="5dp"
             android:src="@drawable/exo_controls_repeat_off" />
 
-        <View
-            android:layout_width="40dp"
-            android:layout_height="35dp"
-            android:layout_weight="1" />
+        <TextView
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:id="@+id/exo_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/blackTrans2"
+            android:padding="2dp"
+            android:text="9999 / 9999"
+            android:gravity="center"
+            android:textAlignment="gravity"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="@+id/buttonContainer"
+            app:layout_constraintStart_toStartOf="@+id/buttonContainer"
+            app:layout_constraintTop_toTopOf="@+id/seekBar" />
 
         <ImageView
             android:id="@+id/playerTimer"
@@ -104,6 +121,8 @@
     </LinearLayout>
 
     <com.google.android.exoplayer2.ui.PlayerView
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_weight="2"
         android:id="@+id/playerView"
         android:layout_width="0dp"
         android:layout_height="0dp"

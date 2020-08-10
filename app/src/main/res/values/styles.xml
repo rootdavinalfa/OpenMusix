@@ -33,4 +33,14 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="TextHeader">
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextBody">
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+
 </resources>
