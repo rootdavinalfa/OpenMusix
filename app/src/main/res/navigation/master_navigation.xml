@@ -9,7 +9,6 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/master_navigation"
     app:startDestination="@id/fragmentMenu">
 
@@ -38,6 +37,9 @@
         <action
             android:id="@+id/action_fragmentMenu_to_fragmentGenre"
             app:destination="@id/fragmentGenre" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentRecently"
+            app:destination="@id/fragmentRecently" />
     </fragment>
     <fragment
         android:id="@+id/fragmentSearch"
@@ -93,4 +95,8 @@
             app:argType="long"
             android:defaultValue="-1L" />
     </fragment>
+    <fragment
+        android:id="@+id/fragmentRecently"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentRecently"
+        android:label="Recently" />
 </navigation>

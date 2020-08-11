@@ -46,7 +46,7 @@
                     android:fontFamily="sans-serif-light"
                     android:maxLines="1"
                     android:padding="5dp"
-                    android:text="safsafsafsafsaf"
+                    tools:text="safsafsafsafsaf"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -68,7 +68,7 @@
                     android:maxLines="1"
 
                     android:padding="5dp"
-                    android:text="safsafsafsafsaf"
+                    tools:text="safsafsafsafsaf"
                     android:textColor="@color/white"
                     android:textSize="14sp"
                     app:layout_constrainedWidth="true"

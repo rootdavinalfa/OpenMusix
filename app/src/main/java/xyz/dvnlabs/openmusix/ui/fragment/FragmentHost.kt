@@ -44,6 +44,7 @@ open class FragmentHost : Fragment() {
                 R.id.fragmentEqualizer -> toolbar.visibility = View.GONE
                 R.id.fragmentGenre -> toolbar.visibility = View.GONE
                 R.id.fragmentGenreDetail -> toolbar.visibility = View.GONE
+                R.id.fragmentRecently -> toolbar.visibility = View.GONE
                 else -> toolbar.visibility = View.VISIBLE
             }
         }

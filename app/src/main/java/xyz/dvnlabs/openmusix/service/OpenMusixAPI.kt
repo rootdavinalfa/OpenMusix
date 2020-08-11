@@ -151,14 +151,16 @@ class OpenMusixAPI(private val context: Context) : LifecycleService(), KoinCompo
         }
     }
 
-
+    @Synchronized
     fun playDefault(media: MediaData? = null, position: Long = 0, playWhenReady: Boolean = true) {
         lifecycleScope.launch {
             val mediaData = mediaDB.mediaDataDAO().getMedia()
             val playList = Converter().convertMediaDataToQueue(mediaData)
             var index = 0
             media?.let {
-                index = mediaData.indexOf(it)
+                index = mediaData.indexOfFirst { idx ->
+                    idx.fileID == it.fileID
+                }
             }
             Log.i(
                 this.javaClass.simpleName,

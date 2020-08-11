@@ -21,12 +21,9 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
-import xyz.dvnlabs.openmusix.data.MediaData
 import xyz.dvnlabs.openmusix.databinding.FragmentGenreDetailBinding
 import xyz.dvnlabs.openmusix.service.OpenMusixAPI
 import xyz.dvnlabs.openmusix.ui.list.PListAdapter
-import java.util.*
-import kotlin.collections.ArrayList
 
 class FragmentGenreDetail : FragmentHost() {
     private var binding: FragmentGenreDetailBinding? = null
@@ -54,18 +51,18 @@ class FragmentGenreDetail : FragmentHost() {
         binding?.genreList?.adapter = adapter
         lifecycleScope.launch {
             if (args.genreID != -1L) {
-                val mediaRaw = mediaDB.mediaDataDAO().getMediaDataByGenre(args.genreID)
                 val genre = mediaDB.mediaGenreDAO().getGenre(args.genreID)
                 var name = genre?.genreName
                 if (name?.isBlank()!!) {
                     name = "Unknown Genre"
                 }
                 binding?.genreName?.text = name
-                val media = ArrayList<MediaData>()
+                val mediaRaw = mediaDB.mediaDataDAO().getMediaDataByGenre(args.genreID)
+                /*val media = ArrayList<MediaData>()
                 for (i in mediaRaw) {
                     media.add(i.data)
-                }
-                adapter.setMediaList(media)
+                }*/
+                adapter.setMediaList(mediaRaw)
             }
         }
 
@@ -73,11 +70,11 @@ class FragmentGenreDetail : FragmentHost() {
             if (args.genreID != -1L) {
                 lifecycleScope.launch {
                     val mediaRaw = mediaDB.mediaDataDAO().getMediaDataByGenre(args.genreID)
-                    val media = ArrayList<MediaData>()
+                    /*val media = ArrayList<MediaData>()
                     for (i in mediaRaw) {
                         media.add(i.data)
-                    }
-                    OpenMusixAPI.api?.playNewQueue(medias = media)
+                    }*/
+                    OpenMusixAPI.api?.playNewQueue(medias = mediaRaw)
                 }
             }
         }

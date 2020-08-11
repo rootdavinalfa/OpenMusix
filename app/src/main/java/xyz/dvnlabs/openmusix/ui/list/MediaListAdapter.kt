@@ -9,11 +9,10 @@
 
 package xyz.dvnlabs.openmusix.ui.list
 
-import android.content.ContentUris
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,31 +72,15 @@ class MediaListAdapter(val itemResource: Int) :
 
         fun bindItem() {
             media = mediaList[absoluteAdapterPosition]
-            val projection = arrayOf(
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ARTIST
-            )
-            val selection = "${MediaStore.Audio.AudioColumns._ID} == ${media!!.fileID}"
-            val query = context.contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, selection, null, null
-            )
-            var detail = ""
-            query.use { x ->
-                val albumColumn = query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
-                val artistColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-                while (x!!.moveToNext()) {
-                    val album = query?.getString(albumColumn!!)
-                    val artist = query?.getString(artistColumn!!)
-                    detail = "$artist - $album"
-                }
-            }
 
-            val imageURL = ContentUris.withAppendedId(
-                Uri.parse("content://media/external/audio/albumart"),
-                media!!.albumID
-            )
+            val retriever = MediaMetadataRetriever()
+            media?.let {
+                retriever.setDataSource(context, Uri.parse(it.contentURI))
+            }
+            val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+            val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+            val imageURL = retriever.embeddedPicture
+            val detail = "$artist - $album"
 
             Glide.with(context)
                 .applyDefaultRequestOptions(

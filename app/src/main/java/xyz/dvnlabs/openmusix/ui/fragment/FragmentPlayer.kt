@@ -11,7 +11,6 @@ package xyz.dvnlabs.openmusix.ui.fragment
 
 import android.annotation.SuppressLint
 import android.content.ContentUris
-import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -35,10 +34,8 @@ import com.yarolegovich.discretescrollview.transform.ScaleTransformer
 import jp.wasabeef.glide.transformations.BlurTransformation
 import kotlinx.android.synthetic.main.exo_playback_control_view.view.*
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import xyz.dvnlabs.openmusix.R
-import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.databinding.FragmentPlayerBinding
 import xyz.dvnlabs.openmusix.service.OpenMusixAPI
 import xyz.dvnlabs.openmusix.ui.list.PlayingListAdapter
@@ -47,7 +44,6 @@ import xyz.dvnlabs.openmusix.util.Converter
 
 class FragmentPlayer : FragmentHost() {
     private var binding: FragmentPlayerBinding? = null
-    private val mediaDB: MediaDB by inject()
     private val listVM: ListViewModel by sharedViewModel()
     private var firstTime = true
 
@@ -58,16 +54,6 @@ class FragmentPlayer : FragmentHost() {
     ): View? {
         binding =
             FragmentPlayerBinding.bind(inflater.inflate(R.layout.fragment_player, container, false))
-        val sharedPref = requireContext().getSharedPreferences("current", Context.MODE_PRIVATE)
-
-        /*Observable.create<Long> { emitter: ObservableEmitter<Long>? ->
-            Schedulers.newThread().schedulePeriodicallyDirect({
-                val fileID = sharedPref.getLong("file_id", -1)
-                emitter?.onNext(fileID)
-            }, 0, 500, TimeUnit.MILLISECONDS)
-        }.observeOn(AndroidSchedulers.mainThread()).distinctUntilChanged().subscribe {
-            listVM.changeFileID(it)
-        }*/
         return binding?.root
     }
 

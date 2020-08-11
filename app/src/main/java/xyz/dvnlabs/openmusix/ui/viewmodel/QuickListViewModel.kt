@@ -58,4 +58,16 @@ class QuickListViewModel(application: Application) : AndroidViewModel(applicatio
             emit(recent)
         }
     }
+
+    private val _recently =
+        fetchRecently().asLiveData(viewModelScope.coroutineContext).distinctUntilChanged()
+    val recently: LiveData<List<MediaData>> = _recently
+
+    private fun fetchRecently() = flow {
+        while (true) {
+            delay(500)
+            val recent = mediaDB.mediaDataDAO().getMediaByRecentAdded()
+            emit(recent)
+        }
+    }
 }

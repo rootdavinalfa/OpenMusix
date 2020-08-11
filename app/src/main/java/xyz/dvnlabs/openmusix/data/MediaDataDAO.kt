@@ -47,6 +47,6 @@ interface MediaDataDAO {
     suspend fun addPlayedCount(file: Long)
 
     @Transaction
-    @Query("SELECT * FROM MediaData INNER JOIN MediaGenre ON MediaData.file_id = MediaGenre.file_id AND MediaGenre.genre_id = :genre")
-    suspend fun getMediaDataByGenre(genre: Long): List<MediaDataGenre>
+    @Query("SELECT MediaData.* FROM MediaData INNER JOIN MediaGenre ON MediaData.file_id = MediaGenre.file_id AND MediaGenre.genre_id = :genre")
+    suspend fun getMediaDataByGenre(genre: Long): List<MediaData>
 }

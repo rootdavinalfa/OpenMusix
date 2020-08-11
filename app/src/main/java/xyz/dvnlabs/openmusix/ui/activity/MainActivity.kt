@@ -14,9 +14,9 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.animation.AnimationUtils
 import androidx.appcompat.view.menu.MenuItemImpl
@@ -115,6 +115,11 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                         binding.playerLayout.playerExpand.isExpanded = true
                     }
                 }
+                R.id.fragmentRecently -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
                 else -> {
                     binding.playerLayout.playerExpand.isExpanded = true
                     binding.playerLayout.bottomNav.menu.findItem(destination.id).isChecked = true
@@ -184,34 +189,23 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                 x.fileID == fileID
             }
 
-            val projection = arrayOf(
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ARTIST
-            )
-            val selection = "${MediaStore.Audio.AudioColumns._ID} == ${current!!.fileID}"
-            val query = this@MainActivity.contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, selection, null, null
-            )
-            var detail = ""
-            query.use { x ->
-                val albumColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
-                val artistColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-                while (x!!.moveToNext()) {
-                    val album = query?.getString(albumColumn!!)
-                    val artist = query?.getString(artistColumn!!)
-                    detail = "$artist - $album"
-                }
+            val retriever = MediaMetadataRetriever()
+            current?.let {
+                retriever.setDataSource(this@MainActivity, Uri.parse(it.contentURI))
             }
-            val imageURL = ContentUris.withAppendedId(
-                Uri.parse("content://media/external/audio/albumart"),
-                current.albumID
-            )
+            val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+            val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+
+            val detail = "$artist - $album"
+            val imageURL = current?.albumID?.let {
+                ContentUris.withAppendedId(
+                    Uri.parse("content://media/external/audio/albumart"),
+                    it
+                )
+            }
 
             withContext(Dispatchers.Main) {
-                binding.playerLayout.playerTitle.text = current.title
+                binding.playerLayout.playerTitle.text = current?.title ?: ""
                 binding.playerLayout.playerDetail.text = detail
                 Glide.with(this@MainActivity)
                     .applyDefaultRequestOptions(
