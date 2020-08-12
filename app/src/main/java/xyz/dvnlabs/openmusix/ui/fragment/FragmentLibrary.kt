@@ -48,7 +48,7 @@ class FragmentLibrary : FragmentHost() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = MediaListAdapter(R.layout.rv_media)
-        val layoutManager = AutoGridLayoutManager(requireContext(), 500)
+        val layoutManager = AutoGridLayoutManager(requireContext())
         binding?.libraryList?.layoutManager = layoutManager
         binding?.libraryList?.adapter = adapter
         listVM.listMedia.observe(viewLifecycleOwner, Observer { x ->

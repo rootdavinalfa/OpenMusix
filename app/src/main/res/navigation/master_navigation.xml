@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_fragmentMenu_to_fragmentRecently"
             app:destination="@id/fragmentRecently" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentArtist"
+            app:destination="@id/fragmentArtist" />
     </fragment>
     <fragment
         android:id="@+id/fragmentSearch"
@@ -99,4 +102,24 @@
         android:id="@+id/fragmentRecently"
         android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentRecently"
         android:label="Recently" />
+    <fragment
+        android:id="@+id/fragmentArtist"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentArtist"
+        android:label="Artist">
+        <action
+            android:id="@+id/action_fragmentArtist_to_fragmentArtistDetail"
+            app:destination="@id/fragmentArtistDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentArtistDetail"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentArtistDetail"
+        android:label="FragmentArtistDetail">
+        <argument
+            android:name="artistID"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <action
+            android:id="@+id/action_fragmentArtistDetail_to_fragmentAlbumDetail"
+            app:destination="@id/fragmentAlbumDetail" />
+    </fragment>
 </navigation>

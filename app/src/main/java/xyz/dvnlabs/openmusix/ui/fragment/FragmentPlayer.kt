@@ -12,6 +12,7 @@ package xyz.dvnlabs.openmusix.ui.fragment
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.graphics.drawable.Drawable
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -113,12 +114,13 @@ class FragmentPlayer : FragmentHost() {
         })
 
 
-
-        binding?.playerList?.onItemMove = { currentPos, oldPos, byUser ->
+        var oldPos = 0
+        binding?.playerList?.onItemMove = { currentPos, _, byUser ->
             if (byUser) {
                 if (currentPos != oldPos) {
                     OpenMusixAPI.api?.playerToIndex(currentPos)
                 }
+                oldPos = currentPos
             }
 
         }
@@ -223,7 +225,9 @@ class FragmentPlayer : FragmentHost() {
                 )
                 view?.exo_next_song?.text = detail
                 binding?.exoCount?.text = "${nowIndex + 1} / ${mediaData.size}"
-                attachImage(imageURL)
+                val retriever = MediaMetadataRetriever()
+                retriever.setDataSource(requireContext(), Uri.parse(current.contentURI))
+                attachImage(retriever.embeddedPicture)
                 binding?.playerList?.scrollToPosition(nowIndex)
                 lifecycleScope.launch {
                     val inputStream =
@@ -234,7 +238,7 @@ class FragmentPlayer : FragmentHost() {
         }
     }
 
-    private fun attachImage(imageURL: Uri) {
+    private fun attachImage(imageURL: ByteArray?) {
         Glide.with(requireContext())
             .applyDefaultRequestOptions(
                 RequestOptions()

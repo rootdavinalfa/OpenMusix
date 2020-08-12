@@ -26,16 +26,6 @@
             android:layout_height="100dp"
             android:background="@color/colorBackgroundAll">
 
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="34dp"
-                android:src="@drawable/ic_album"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,7 +35,7 @@
                 android:textColor="@color/colorText"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/imageView3"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

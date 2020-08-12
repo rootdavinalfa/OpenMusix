@@ -21,7 +21,6 @@ class NewDiscreteScrollView(context: Context, attributeSet: AttributeSet) :
 
     var onItemMove: (Int, Int, Boolean) -> Unit = { currentPosition, oldPosition, byUser -> Unit }
     private var isTouched = false
-        private set
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(e: MotionEvent?): Boolean {

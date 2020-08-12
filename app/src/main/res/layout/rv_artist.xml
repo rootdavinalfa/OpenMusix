@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020.
+  ~ Davin Alfarizky Putra Basudewa <dbasudewa@gmail.com>
+  ~ OpenMusix ,An open source music media player
+  ~ Under License Apache 2.0
+  ~ [This app does not contain any warranty]
+  ~
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+    <TextView
+        android:id="@+id/artistName"
+        style="@style/TextHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="ClariS" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_song"
+            android:tint="@color/colorText" />
+
+        <TextView
+            android:id="@+id/artistTrack"
+            style="@style/TextBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:padding="5dp"
+            tools:text="99999" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

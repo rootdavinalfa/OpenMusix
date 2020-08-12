@@ -15,6 +15,7 @@
     <color name="colorBackground">@color/white</color>
     <color name="colorBackgroundAll">@android:color/background_light</color>
     <color name="white">#E8E8E8</color>
+    <color name="whiteShadow">#9B9B9B</color>
     <color name="black">#000</color>
     <color name="blackTrans">#CD000000</color>
     <color name="blackTrans2">#94191919</color>

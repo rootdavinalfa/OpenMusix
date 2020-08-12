@@ -46,7 +46,7 @@ class FragmentSearch : FragmentHost() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = MediaListAdapter(R.layout.rv_media)
-        val layoutManager = AutoGridLayoutManager(requireContext(), 500)
+        val layoutManager = AutoGridLayoutManager(requireContext())
         binding?.searchList?.layoutManager = layoutManager
         binding?.searchList?.adapter = adapter
         binding?.searchTextInput?.doOnTextChanged { text, _, _, count ->

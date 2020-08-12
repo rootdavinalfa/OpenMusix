@@ -23,25 +23,16 @@
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="10dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textSize="16sp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageView4"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Pop" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/exo_icon_play"
-        android:padding="5dp"
-        android:tint="@color/colorText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,7 +16,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.Nullable
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +28,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.rv_now_play.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.data.MediaData
@@ -71,7 +76,7 @@ class PlayingListAdapter(private val itemResource: Int) :
             image.setOnClickListener(this)
         }
 
-        fun bindItem() {
+        fun bindItem() = CoroutineScope(Dispatchers.Main).launch {
             media = mediaList[bindingAdapterPosition]
             val retriever = MediaMetadataRetriever()
             media?.let {
@@ -99,7 +104,92 @@ class PlayingListAdapter(private val itemResource: Int) :
                 ).into(image)
             title.text = media!!.title
             detailText.text = detail
+
+            //Read rating
+            val data = mediaDB?.mediaDataDAO()?.getMediaByID(media!!.fileID)
+            when (data?.rating) {
+                3.0 -> {
+                    itemView.playerViewDislike.setColorFilter(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.white
+                        )
+                    )
+                    itemView.playerViewLike.setColorFilter(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.whiteShadow
+                        )
+                    )
+                }
+                5.0 -> {
+                    itemView.playerViewDislike.setColorFilter(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.whiteShadow
+                        )
+                    )
+                    itemView.playerViewLike.setColorFilter(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.white
+                        )
+                    )
+                }
+                else -> {
+                    itemView.playerViewDislike.setColorFilter(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.whiteShadow
+                        )
+                    )
+                    itemView.playerViewLike.setColorFilter(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.whiteShadow
+                        )
+                    )
+                }
+            }
+
+            itemView.playerViewLike.setOnClickListener {
+                Toast.makeText(context, "Liked", Toast.LENGTH_SHORT).show()
+                media?.fileID?.let { it1 -> likeDislike(5.0, it1) }
+                itemView.playerViewDislike.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.whiteShadow
+                    )
+                )
+                itemView.playerViewLike.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.white
+                    )
+                )
+            }
+            itemView.playerViewDislike.setOnClickListener {
+                Toast.makeText(context, "Disliked", Toast.LENGTH_SHORT).show()
+                media?.fileID?.let { it1 -> likeDislike(3.0, it1) }
+                itemView.playerViewDislike.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.white
+                    )
+                )
+                itemView.playerViewLike.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.whiteShadow
+                    )
+                )
+            }
         }
+
+        private fun likeDislike(rating: Double, fileID: Long) =
+            CoroutineScope(Dispatchers.Main).launch {
+                mediaDB?.mediaDataDAO()?.changeRating(rating, fileID)
+            }
 
         override fun onClick(v: View?) {
             val navController = itemView.findNavController()

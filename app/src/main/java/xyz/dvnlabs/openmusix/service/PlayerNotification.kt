@@ -13,34 +13,25 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.bumptech.glide.signature.ObjectKey
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
-import xyz.dvnlabs.openmusix.data.MediaData
 import xyz.dvnlabs.openmusix.ui.activity.MainActivity
 
 class PlayerNotification(private val service: PlayerService) {
@@ -114,32 +105,13 @@ class PlayerNotification(private val service: PlayerService) {
             }
             GlobalScope.launch {
                 current.collect {
-                    val imageURL = ContentUris.withAppendedId(
-                        Uri.parse("content://media/external/audio/albumart"),
-                        it.albumID
-                    )
-
-                    val projection = arrayOf(
-                        MediaStore.Audio.Media.ALBUM,
-                        MediaStore.Audio.Media.ARTIST
-                    )
-                    val selection = "${MediaStore.Audio.AudioColumns._ID} == ${it.fileID}"
-                    val query = service.contentResolver.query(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        projection, selection, null, null
-                    )
-                    var detail = ""
-                    query.use { x ->
-                        val albumColumn =
-                            query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
-                        val artistColumn =
-                            query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-                        while (x!!.moveToNext()) {
-                            val album = query?.getString(albumColumn!!)
-                            val artist = query?.getString(artistColumn!!)
-                            detail = "$artist - $album"
-                        }
-                    }
+                    val retriever = MediaMetadataRetriever()
+                    retriever.setDataSource(service, Uri.parse(it.contentURI))
+                    val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                    val artist =
+                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                    val imageURL = retriever.embeddedPicture
+                    val detail = "$artist - $album"
 
                     val notification = builder.setOngoing(true)
                         .setSmallIcon(notificationIcon)
@@ -169,11 +141,6 @@ class PlayerNotification(private val service: PlayerService) {
 
                     Glide.with(service)
                         .asBitmap()
-                        .apply(
-                            RequestOptions()
-                                .signature(ObjectKey(imageURL))
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        )
                         .load(imageURL)
                         .into(object : CustomTarget<Bitmap?>() {
                             override fun onResourceReady(

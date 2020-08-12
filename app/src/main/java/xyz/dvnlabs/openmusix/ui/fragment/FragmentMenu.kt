@@ -56,6 +56,9 @@ class FragmentMenu : FragmentHost() {
         binding?.menuGenre?.setOnClickListener {
             navController.navigate(R.id.fragmentGenre)
         }
+        binding?.menuArtist?.setOnClickListener {
+            navController.navigate(R.id.fragmentArtist)
+        }
 
         binding?.menuRecentlyAdded?.setOnClickListener {
             navController.navigate(R.id.fragmentRecently)

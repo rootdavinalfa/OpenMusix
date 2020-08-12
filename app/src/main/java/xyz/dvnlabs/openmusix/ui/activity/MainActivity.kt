@@ -11,7 +11,6 @@ package xyz.dvnlabs.openmusix.ui.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentUris
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
@@ -115,6 +114,16 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                         binding.playerLayout.playerExpand.isExpanded = true
                     }
                 }
+                R.id.fragmentArtist -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
+                R.id.fragmentArtistDetail -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
                 R.id.fragmentRecently -> {
                     if (fileID != -1L) {
                         binding.playerLayout.playerExpand.isExpanded = true
@@ -161,7 +170,7 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
             }
         })
 
-        OpenMusixAPI.api?.liveDataChange?.observe(this, Observer {
+        OpenMusixAPI.api?.liveTrackChange?.observe(this, Observer {
             lifecycleScope.launch {
                 if (it.currentTag != null) {
                     fileID = it.currentTag as Long
@@ -197,12 +206,7 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
             val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
 
             val detail = "$artist - $album"
-            val imageURL = current?.albumID?.let {
-                ContentUris.withAppendedId(
-                    Uri.parse("content://media/external/audio/albumart"),
-                    it
-                )
-            }
+            val imageURL = retriever.embeddedPicture
 
             withContext(Dispatchers.Main) {
                 binding.playerLayout.playerTitle.text = current?.title ?: ""

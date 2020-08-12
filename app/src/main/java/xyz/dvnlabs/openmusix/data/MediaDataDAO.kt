@@ -46,6 +46,9 @@ interface MediaDataDAO {
     @Query("UPDATE MediaData SET played_count = played_count + 1 WHERE file_id = :file")
     suspend fun addPlayedCount(file: Long)
 
+    @Query("UPDATE MediaData SET rating = :rating WHERE file_id = :file")
+    suspend fun changeRating(rating: Double, file: Long)
+
     @Transaction
     @Query("SELECT MediaData.* FROM MediaData INNER JOIN MediaGenre ON MediaData.file_id = MediaGenre.file_id AND MediaGenre.genre_id = :genre")
     suspend fun getMediaDataByGenre(genre: Long): List<MediaData>

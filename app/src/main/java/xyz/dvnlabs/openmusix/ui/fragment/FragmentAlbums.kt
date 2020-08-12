@@ -68,7 +68,7 @@ class FragmentAlbums : FragmentHost() {
         })
 
         val adapter = AlbumListAdapter(R.layout.rv_media)
-        val layoutManager = AutoGridLayoutManager(requireContext(), 500)
+        val layoutManager = AutoGridLayoutManager(requireContext())
         binding?.albumsList?.layoutManager = layoutManager
         binding?.albumsList?.adapter = adapter
 

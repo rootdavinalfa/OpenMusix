@@ -86,7 +86,7 @@
         android:foreground="?android:attr/actionBarItemBackground"
         android:padding="10dp"
         android:src="@drawable/ic_like"
-        android:tint="@color/white"
+        android:tint="@color/whiteShadow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/playerViewDislike" />
 
@@ -103,7 +103,7 @@
         android:foreground="?android:attr/actionBarItemBackground"
         android:padding="10dp"
         android:src="@drawable/ic_dislike"
-        android:tint="@color/white"
+        android:tint="@color/whiteShadow"
         app:layout_constraintBottom_toBottomOf="@+id/playerViewImage"
         app:layout_constraintStart_toStartOf="parent" />
 

@@ -25,6 +25,9 @@ interface MediaAlbumDAO {
     @Query("SELECT * FROM MediaAlbum WHERE album_id = :id LIMIT 0,1")
     suspend fun getAlbumByID(id: Long): MediaAlbum
 
+    @Query("SELECT MediaAlbum.* FROM MediaAlbum INNER JOIN MediaArtist ON MediaAlbum.artist_name == MediaArtist.artist_name WHERE MediaArtist.artist_name = :artist ORDER BY MediaAlbum.album_name COLLATE NOCASE")
+    suspend fun getAlbumByArtist(artist: String): List<MediaAlbum>
+
     @Query("DELETE FROM MediaAlbum")
     suspend fun deleteAllAlbum()
 }

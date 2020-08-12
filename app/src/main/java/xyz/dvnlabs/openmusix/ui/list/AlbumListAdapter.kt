@@ -32,6 +32,7 @@ import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaAlbum
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.ui.fragment.FragmentAlbumsDirections
+import xyz.dvnlabs.openmusix.ui.fragment.FragmentArtistDetailDirections
 
 class AlbumListAdapter(val itemResource: Int) :
     RecyclerView.Adapter<AlbumListAdapter.ViewHolder>() {
@@ -91,7 +92,7 @@ class AlbumListAdapter(val itemResource: Int) :
                 ).apply(
                     RequestOptions()
                         .override(600, 600)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 ).into(object : CustomTarget<Drawable?>() {
                     override fun onResourceReady(
                         resource: Drawable,
@@ -118,14 +119,29 @@ class AlbumListAdapter(val itemResource: Int) :
 
         override fun onClick(v: View?) {
             val navController = itemView.findNavController()
-            media?.albumID?.let {
-                val action =
-                    FragmentAlbumsDirections.actionFragmentAlbumsToFragmentAlbumDetail().setAlbumID(
-                        it
-                    )
-                navController.navigate(action)
-            }
+            when (navController.currentDestination?.id) {
+                R.id.fragmentArtistDetail -> {
+                    media?.albumID?.let {
+                        val action =
+                            FragmentArtistDetailDirections.actionFragmentArtistDetailToFragmentAlbumDetail()
+                                .setAlbumID(
+                                    it
+                                )
+                        navController.navigate(action)
+                    }
+                }
 
+                R.id.fragmentAlbums -> {
+                    media?.albumID?.let {
+                        val action =
+                            FragmentAlbumsDirections.actionFragmentAlbumsToFragmentAlbumDetail()
+                                .setAlbumID(
+                                    it
+                                )
+                        navController.navigate(action)
+                    }
+                }
+            }
             /*OpenMusixAPI.api?.playDefault(media)
             navController.navigate(R.id.fragmentPlayer)*/
         }

@@ -13,7 +13,8 @@ import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class AutoGridLayoutManager(context: Context?, columnWidth: Int) : GridLayoutManager(context, 2) {
+
+class AutoGridLayoutManager(context: Context?) : GridLayoutManager(context, 2) {
     private var columnWidth = 0
     private var columnWidthChanged = true
     private fun setColumnWidth(newColumnWidth: Int) {

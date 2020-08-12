@@ -10,18 +10,21 @@
 package xyz.dvnlabs.openmusix.service
 
 import android.app.Service
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Binder
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
-import android.provider.MediaStore
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -501,31 +504,12 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
         if (currentPlaylist.isNotEmpty()) {
             val currentSong = currentPlaylist[exoPlayer!!.currentWindowIndex]
 
-            val projection = arrayOf(
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ARTIST
-            )
-            val selection = "${MediaStore.Audio.AudioColumns._ID} == ${currentSong.tag}"
-            val query = this.contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                projection, selection, null, null
-            )
-            var album = ""
-            var artist = ""
-            query.use { x ->
-                val albumColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM)
-                val artistColumn =
-                    query?.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-                while (x!!.moveToNext()) {
-                    album = query!!.getString(albumColumn!!)!!
-                    artist = query.getString(artistColumn!!)!!
-                }
-            }
-            val imageURL = ContentUris.withAppendedId(
-                Uri.parse("content://media/external/audio/albumart"),
-                currentSong.mediaData.albumID
-            )
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(this, Uri.parse(currentSong.mediaData.contentURI))
+            val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+            val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+            val imageURL = retriever.embeddedPicture
+
             val metaData = MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.mediaData.title)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
