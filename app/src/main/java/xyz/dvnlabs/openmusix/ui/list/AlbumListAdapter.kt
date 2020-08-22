@@ -92,7 +92,7 @@ class AlbumListAdapter(val itemResource: Int) :
                 ).apply(
                     RequestOptions()
                         .override(600, 600)
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                 ).into(object : CustomTarget<Drawable?>() {
                     override fun onResourceReady(
                         resource: Drawable,

@@ -68,6 +68,7 @@ class FragmentMenu : FragmentHost() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding?.menuRecentlyAddedList?.layoutManager = layoutManager
         binding?.menuRecentlyAddedList?.adapter = adapter
+        binding?.menuRecentlyAddedList?.setItemViewCacheSize(20)
         quickVM.recentPlay.observe(viewLifecycleOwner, Observer {
             adapter.setMediaList(it)
         })

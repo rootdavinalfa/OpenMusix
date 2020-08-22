@@ -35,6 +35,7 @@ import xyz.dvnlabs.openmusix.service.OpenMusixAPI
 
 class PListAdapter(val itemResource: Int) :
     RecyclerView.Adapter<PListAdapter.ViewHolder>() {
+    val retriever = MediaMetadataRetriever()
     private var mediaDB: MediaDB? = null
     private var mediaList: List<MediaData> = emptyList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -72,51 +73,50 @@ class PListAdapter(val itemResource: Int) :
 
         fun bindItem() {
             media = mediaList[absoluteAdapterPosition]
-            val retriever = MediaMetadataRetriever()
             media?.let {
                 retriever.setDataSource(context, Uri.parse(it.contentURI))
+                val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                val imageURL = retriever.embeddedPicture
+                val detail = "$artist - $album"
+
+                Glide.with(context)
+                    .applyDefaultRequestOptions(
+                        RequestOptions()
+                            .placeholder(R.drawable.ic_song)
+                            .error(R.drawable.ic_song)
+                    )
+                    .load(imageURL).transform(RoundedCorners(30))
+                    .transition(
+                        DrawableTransitionOptions()
+                            .crossFade()
+                    ).apply(
+                        RequestOptions()
+                            .override(600, 600)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    ).into(object : CustomTarget<Drawable?>() {
+                        override fun onResourceReady(
+                            resource: Drawable,
+                            transition: Transition<in Drawable?>?
+                        ) {
+                            imageCover.background = resource
+                        }
+
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                            imageCover.background = placeholder
+                        }
+
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
+                            imageCover.background = errorDrawable
+                        }
+
+                        override fun onLoadStarted(placeholder: Drawable?) {
+                            imageCover.background = placeholder
+                        }
+                    })
+                detailView.text = detail
+                title.text = it.title
             }
-            val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-            val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            val imageURL = retriever.embeddedPicture
-            val detail = "$artist - $album"
-
-            Glide.with(context)
-                .applyDefaultRequestOptions(
-                    RequestOptions()
-                        .placeholder(R.drawable.ic_song)
-                        .error(R.drawable.ic_song)
-                )
-                .load(imageURL).transform(RoundedCorners(30))
-                .transition(
-                    DrawableTransitionOptions()
-                        .crossFade()
-                ).apply(
-                    RequestOptions()
-                        .override(600, 600)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                ).into(object : CustomTarget<Drawable?>() {
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        transition: Transition<in Drawable?>?
-                    ) {
-                        imageCover.background = resource
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        imageCover.background = placeholder
-                    }
-
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        imageCover.background = errorDrawable
-                    }
-
-                    override fun onLoadStarted(placeholder: Drawable?) {
-                        imageCover.background = placeholder
-                    }
-                })
-            detailView.text = detail
-            title.text = media!!.title
         }
 
         override fun onClick(v: View?) {

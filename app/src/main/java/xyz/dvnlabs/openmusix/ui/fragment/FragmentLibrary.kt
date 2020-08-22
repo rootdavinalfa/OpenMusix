@@ -51,6 +51,7 @@ class FragmentLibrary : FragmentHost() {
         val layoutManager = AutoGridLayoutManager(requireContext())
         binding?.libraryList?.layoutManager = layoutManager
         binding?.libraryList?.adapter = adapter
+        binding?.libraryList?.setItemViewCacheSize(20)
         listVM.listMedia.observe(viewLifecycleOwner, Observer { x ->
             adapter.setMediaList(x)
         })

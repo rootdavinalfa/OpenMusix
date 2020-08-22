@@ -37,6 +37,7 @@ import xyz.dvnlabs.openmusix.data.MediaData
 
 class PlayingListAdapter(private val itemResource: Int) :
     RecyclerView.Adapter<PlayingListAdapter.ViewHolder>() {
+    val retriever = MediaMetadataRetriever()
     private var mediaDB: MediaDB? = null
     private var mediaList: List<MediaData> = emptyList()
     private var lastPosition: Int = 0
@@ -78,77 +79,76 @@ class PlayingListAdapter(private val itemResource: Int) :
 
         fun bindItem() = CoroutineScope(Dispatchers.Main).launch {
             media = mediaList[bindingAdapterPosition]
-            val retriever = MediaMetadataRetriever()
             media?.let {
                 retriever.setDataSource(context, Uri.parse(it.contentURI))
-            }
-            val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-            val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            val imageURL = retriever.embeddedPicture
-            val detail = "$artist - $album"
+                val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                val imageURL = retriever.embeddedPicture
+                val detail = "$artist - $album"
 
-            Glide.with(context)
-                .applyDefaultRequestOptions(
-                    RequestOptions()
-                        .placeholder(R.drawable.ic_song)
-                        .error(R.drawable.ic_song)
-                )
-                .load(imageURL).transform(RoundedCorners(10))
-                .transition(
-                    DrawableTransitionOptions()
-                        .crossFade()
-                ).apply(
-                    RequestOptions()
-                        .override(600, 600)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                ).into(image)
-            title.text = media!!.title
-            detailText.text = detail
+                Glide.with(context)
+                    .applyDefaultRequestOptions(
+                        RequestOptions()
+                            .placeholder(R.drawable.ic_song)
+                            .error(R.drawable.ic_song)
+                    )
+                    .load(imageURL).transform(RoundedCorners(10))
+                    .transition(
+                        DrawableTransitionOptions()
+                            .crossFade()
+                    ).apply(
+                        RequestOptions()
+                            .override(600, 600)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    ).into(image)
+                title.text = it.title
+                detailText.text = detail
 
-            //Read rating
-            val data = mediaDB?.mediaDataDAO()?.getMediaByID(media!!.fileID)
-            when (data?.rating) {
-                3.0 -> {
-                    itemView.playerViewDislike.setColorFilter(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.white
+                //Read rating
+                val data = mediaDB?.mediaDataDAO()?.getMediaByID(it.fileID)
+                when (data?.rating) {
+                    3.0 -> {
+                        itemView.playerViewDislike.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.white
+                            )
                         )
-                    )
-                    itemView.playerViewLike.setColorFilter(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.whiteShadow
+                        itemView.playerViewLike.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.whiteShadow
+                            )
                         )
-                    )
-                }
-                5.0 -> {
-                    itemView.playerViewDislike.setColorFilter(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.whiteShadow
+                    }
+                    5.0 -> {
+                        itemView.playerViewDislike.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.whiteShadow
+                            )
                         )
-                    )
-                    itemView.playerViewLike.setColorFilter(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.white
+                        itemView.playerViewLike.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.white
+                            )
                         )
-                    )
-                }
-                else -> {
-                    itemView.playerViewDislike.setColorFilter(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.whiteShadow
+                    }
+                    else -> {
+                        itemView.playerViewDislike.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.whiteShadow
+                            )
                         )
-                    )
-                    itemView.playerViewLike.setColorFilter(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.whiteShadow
+                        itemView.playerViewLike.setColorFilter(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.whiteShadow
+                            )
                         )
-                    )
+                    }
                 }
             }
 
@@ -184,6 +184,7 @@ class PlayingListAdapter(private val itemResource: Int) :
                     )
                 )
             }
+
         }
 
         private fun likeDislike(rating: Double, fileID: Long) =
@@ -197,7 +198,7 @@ class PlayingListAdapter(private val itemResource: Int) :
         }
     }
 
-    inner class MediaDiff(
+    class MediaDiff(
         private val newList: List<MediaData>,
         private val oldList: List<MediaData>
     ) : DiffUtil.Callback() {

@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.lifecycle.Observer
 import androidx.lifecycle.distinctUntilChanged
@@ -75,6 +76,7 @@ class FragmentPlayer : FragmentHost() {
                 .setPivotY(Pivot.Y.BOTTOM) // CENTER is a default one
                 .build()
         )
+        binding?.playerList?.setItemViewCacheSize(3)
         binding?.playerView?.controllerHideOnTouch = false
         binding?.playerView?.showController()
         binding?.playerView?.player = OpenMusixAPI.service?.exoPlayer
@@ -160,7 +162,12 @@ class FragmentPlayer : FragmentHost() {
                 }
                 else -> R.drawable.exo_controls_repeat_off
             }
-            binding?.playerRepeat?.setImageDrawable(requireContext().getDrawable(icon))
+            binding?.playerRepeat?.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    icon
+                )
+            )
         })
         binding?.playerRepeat?.setOnClickListener {
             OpenMusixAPI.api?.changeRepeatMode()
@@ -178,7 +185,12 @@ class FragmentPlayer : FragmentHost() {
                 }
                 else -> R.drawable.exo_controls_repeat_off
             }
-            binding?.playerShuffle?.setImageDrawable(requireContext().getDrawable(icon))
+            binding?.playerShuffle?.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    icon
+                )
+            )
         })
         binding?.playerShuffle?.setOnClickListener {
             OpenMusixAPI.api?.changeShuffleMode()

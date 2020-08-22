@@ -49,6 +49,7 @@ class FragmentSearch : FragmentHost() {
         val layoutManager = AutoGridLayoutManager(requireContext())
         binding?.searchList?.layoutManager = layoutManager
         binding?.searchList?.adapter = adapter
+        binding?.searchList?.setItemViewCacheSize(20)
         binding?.searchTextInput?.doOnTextChanged { text, _, _, count ->
             if (count == 0) {
                 binding?.searchClear?.visibility = View.GONE
@@ -58,10 +59,10 @@ class FragmentSearch : FragmentHost() {
             lifecycleScope.launch {
                 val list = mediaDB.mediaDataDAO().getMedia()
                 if (!text.isNullOrEmpty()) {
-                    val filtered = list?.filter {
+                    val filtered = list.filter {
                         "(?i)$text".toRegex().containsMatchIn(it.title)
                     }
-                    adapter.setMediaList(filtered!!)
+                    adapter.setMediaList(filtered)
                 } else {
                     adapter.setMediaList(emptyList())
                 }
