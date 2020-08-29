@@ -18,8 +18,7 @@ import androidx.room.*
         parentColumns = ["uid"],
         childColumns = ["queue_id"],
         onDelete = ForeignKey.CASCADE
-    )]
-    , indices = [Index(value = ["queue_id"], unique = false)]
+    )], indices = [Index(value = ["queue_id", "file_id"], name = "index_quid_fid")]
 )
 data class QueueDetail(
     @PrimaryKey(autoGenerate = true) var uid: Long = 0,

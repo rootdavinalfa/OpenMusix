@@ -13,10 +13,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [MediaData::class, MediaGenre::class, MediaQueue::class, QueueDetail::class, MediaArtist::class, MediaAlbum::class],
-    version = 1
+    version = 2
 )
 abstract class MediaDB : RoomDatabase() {
     abstract fun mediaDataDAO(): MediaDataDAO
@@ -42,11 +44,25 @@ abstract class MediaDB : RoomDatabase() {
                         MediaDB::class.java,
                         "media.db"
                     )
+                        .addMigrations(migrate1to2)
                         .build()
                     INSTANCE = instance
                     // return instance
                     instance
                 }
+        }
+
+        //Using for adding index to incomplete table
+        val migrate1to2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "CREATE INDEX 'gname_id' ON MediaGenre('genre_id','genre_name');"
+                )
+                database.execSQL("CREATE INDEX 'iquid' ON MediaQueue('uid');")
+                //Drop existing index then create
+                database.execSQL("DROP INDEX 'index_MediaQueueDetail_queue_id'")
+                database.execSQL("CREATE INDEX 'index_quid_fid' ON MediaQueueDetail('queue_id','file_id')")
+            }
         }
     }
 }
