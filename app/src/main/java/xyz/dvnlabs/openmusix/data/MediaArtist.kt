@@ -14,7 +14,10 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "MediaArtist", indices = [Index(value = ["artist_id"], unique = true)])
+@Entity(
+    tableName = "MediaArtist", indices = [Index(value = ["artist_id"], unique = true),
+        Index(value = ["artist_name"], name = "index_artist_name")]
+)
 data class MediaArtist(
     @PrimaryKey(autoGenerate = true) var uid: Long = 0,
     @ColumnInfo(name = "artist_id") var artistID: Long,

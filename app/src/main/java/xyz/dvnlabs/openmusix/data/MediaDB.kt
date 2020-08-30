@@ -18,7 +18,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [MediaData::class, MediaGenre::class, MediaQueue::class, QueueDetail::class, MediaArtist::class, MediaAlbum::class],
-    version = 2
+    version = 3
 )
 abstract class MediaDB : RoomDatabase() {
     abstract fun mediaDataDAO(): MediaDataDAO
@@ -44,7 +44,7 @@ abstract class MediaDB : RoomDatabase() {
                         MediaDB::class.java,
                         "media.db"
                     )
-                        .addMigrations(migrate1to2)
+                        .addMigrations(migrate1to2, migrate2to3)
                         .build()
                     INSTANCE = instance
                     // return instance
@@ -62,6 +62,12 @@ abstract class MediaDB : RoomDatabase() {
                 //Drop existing index then create
                 database.execSQL("DROP INDEX 'index_MediaQueueDetail_queue_id'")
                 database.execSQL("CREATE INDEX 'index_quid_fid' ON MediaQueueDetail('queue_id','file_id')")
+            }
+        }
+        val migrate2to3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE INDEX 'index_data_album_artist' ON MediaData('album_id','artist_id')")
+                database.execSQL("CREATE INDEX 'index_artist_name' ON MediaArtist('artist_name')")
             }
         }
     }
