@@ -23,8 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.android.ext.android.inject
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.data.MediaData
 import xyz.dvnlabs.openmusix.data.MediaQueue
@@ -36,7 +35,7 @@ import xyz.dvnlabs.openmusix.util.Converter
 /**
  * <b>This class used for API gateway between PlayerService and UI (Activity,Fragment or View)</b>
  */
-class OpenMusixAPI(private val context: Context) : LifecycleService(), KoinComponent {
+class OpenMusixAPI(private val context: Context) : LifecycleService() {
 
     private val mediaDB: MediaDB by inject()
     private val sharedPref =

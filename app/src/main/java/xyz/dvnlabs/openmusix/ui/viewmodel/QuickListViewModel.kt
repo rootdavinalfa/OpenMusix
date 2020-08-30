@@ -16,10 +16,7 @@ import kotlinx.coroutines.flow.flow
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import org.koin.core.parameter.parametersOf
-import xyz.dvnlabs.openmusix.data.MediaArtist
-import xyz.dvnlabs.openmusix.data.MediaDB
-import xyz.dvnlabs.openmusix.data.MediaData
-import xyz.dvnlabs.openmusix.data.MediaGenre
+import xyz.dvnlabs.openmusix.data.*
 
 class QuickListViewModel(application: Application) : AndroidViewModel(application), KoinComponent {
     private val mediaDB: MediaDB by inject { parametersOf(application) }
@@ -80,6 +77,18 @@ class QuickListViewModel(application: Application) : AndroidViewModel(applicatio
         while (true) {
             delay(500)
             val recent = mediaDB.mediaArtistDAO().getAllArtist()
+            emit(recent)
+        }
+    }
+
+    private val _playlist =
+        fetchPlaylist().asLiveData(viewModelScope.coroutineContext).distinctUntilChanged()
+    val playlist: LiveData<List<MediaQueue>> = _playlist
+
+    private fun fetchPlaylist() = flow {
+        while (true) {
+            delay(500)
+            val recent = mediaDB.mediaQueueDAO().getQueueUser()
             emit(recent)
         }
     }

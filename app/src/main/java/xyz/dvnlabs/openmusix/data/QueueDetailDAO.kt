@@ -20,4 +20,10 @@ interface QueueDetailDAO {
 
     @Query("SELECT * FROM MediaQueueDetail WHERE queue_id = :queueID")
     suspend fun getQueueDetailByQueueID(queueID: Long): List<QueueDetail>
+
+    @Query("SELECT COUNT(*) FROM MediaQueueDetail WHERE queue_id = :queueID")
+    suspend fun getCountDetailByQueueID(queueID: Long): Long
+
+    @Query("DELETE FROM MediaQueueDetail WHERE queue_id = :queueID AND file_id = :fileID")
+    suspend fun deleteQueueDetailById(queueID: Long, fileID: Long)
 }

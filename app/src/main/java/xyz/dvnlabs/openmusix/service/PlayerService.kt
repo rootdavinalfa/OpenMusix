@@ -502,55 +502,65 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
 
     private fun updateMetaData() {
         if (currentPlaylist.isNotEmpty()) {
-            val currentSong = currentPlaylist[exoPlayer!!.currentWindowIndex]
+            try {
+                val currentSong = currentPlaylist[exoPlayer!!.currentWindowIndex]
 
-            val retriever = MediaMetadataRetriever()
-            retriever.setDataSource(this, Uri.parse(currentSong.mediaData.contentURI))
-            val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-            val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            val imageURL = retriever.embeddedPicture
+                val retriever = MediaMetadataRetriever()
+                retriever.setDataSource(this, Uri.parse(currentSong.mediaData.contentURI))
+                val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                val imageURL = retriever.embeddedPicture
 
-            val metaData = MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.mediaData.title)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-                .putString(
-                    MediaMetadataCompat.METADATA_KEY_COMPOSER,
-                    currentSong.mediaData.composer
-                )
-                .putLong(
-                    MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,
-                    currentSong.mediaData.track.toLong()
-                )
-                .putLong(MediaMetadataCompat.METADATA_KEY_YEAR, currentSong.mediaData.year.toLong())
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, artist)
-                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, exoPlayer!!.duration)
-            Glide.with(this)
-                .asBitmap()
-                .transform(BlurTransformation(5))
-                .thumbnail(0.25f)
-                .apply(
-                    RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                )
-                .load(imageURL)
-                .into(object : CustomTarget<Bitmap?>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap?>?
-                    ) {
-                        metaData?.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, resource)
-                        mediaSession?.setMetadata(metaData.build())
-                    }
+                val metaData = MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.mediaData.title)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+                    .putString(
+                        MediaMetadataCompat.METADATA_KEY_COMPOSER,
+                        currentSong.mediaData.composer
+                    )
+                    .putLong(
+                        MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,
+                        currentSong.mediaData.track.toLong()
+                    )
+                    .putLong(
+                        MediaMetadataCompat.METADATA_KEY_YEAR,
+                        currentSong.mediaData.year.toLong()
+                    )
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, artist)
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, exoPlayer!!.duration)
+                Glide.with(this)
+                    .asBitmap()
+                    .transform(BlurTransformation(5))
+                    .thumbnail(0.25f)
+                    .apply(
+                        RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    )
+                    .load(imageURL)
+                    .into(object : CustomTarget<Bitmap?>() {
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: Transition<in Bitmap?>?
+                        ) {
+                            metaData?.putBitmap(
+                                MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                                resource
+                            )
+                            mediaSession?.setMetadata(metaData.build())
+                        }
 
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                        }
 
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        super.onLoadFailed(errorDrawable)
-                        mediaSession?.setMetadata(metaData.build())
-                    }
-                })
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
+                            super.onLoadFailed(errorDrawable)
+                            mediaSession?.setMetadata(metaData.build())
+                        }
+                    })
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

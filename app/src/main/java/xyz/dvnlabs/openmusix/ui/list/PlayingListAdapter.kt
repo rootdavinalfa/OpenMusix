@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.Nullable
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.data.MediaData
+import xyz.dvnlabs.openmusix.ui.fragment.bottom.PlayingMenuSelector
 
 class PlayingListAdapter(private val itemResource: Int) :
     RecyclerView.Adapter<PlayingListAdapter.ViewHolder>() {
@@ -183,6 +185,12 @@ class PlayingListAdapter(private val itemResource: Int) :
                         R.color.whiteShadow
                     )
                 )
+            }
+
+            itemView.playerViewMore.setOnClickListener {
+                val fragment = PlayingMenuSelector()
+                val activity = context as AppCompatActivity
+                fragment.show(activity.supportFragmentManager, "PlayingMenuSelector")
             }
 
         }

@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_fragmentMenu_to_fragmentArtist"
             app:destination="@id/fragmentArtist" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentPlaylist"
+            app:destination="@id/fragmentPlaylist" />
     </fragment>
     <fragment
         android:id="@+id/fragmentSearch"
@@ -122,4 +125,8 @@
             android:id="@+id/action_fragmentArtistDetail_to_fragmentAlbumDetail"
             app:destination="@id/fragmentAlbumDetail" />
     </fragment>
+    <fragment
+        android:id="@+id/fragmentPlaylist"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentPlaylist"
+        android:label="Playlist" />
 </navigation>

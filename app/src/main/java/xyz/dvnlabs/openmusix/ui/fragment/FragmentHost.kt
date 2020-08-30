@@ -47,6 +47,7 @@ open class FragmentHost : Fragment() {
                 R.id.fragmentArtist -> toolbar.visibility = View.GONE
                 R.id.fragmentArtistDetail -> toolbar.visibility = View.GONE
                 R.id.fragmentRecently -> toolbar.visibility = View.GONE
+                R.id.fragmentPlaylist -> toolbar.visibility = View.GONE
                 else -> toolbar.visibility = View.VISIBLE
             }
         }

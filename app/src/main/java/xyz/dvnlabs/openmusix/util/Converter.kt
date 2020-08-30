@@ -14,24 +14,18 @@ import xyz.dvnlabs.openmusix.service.PlaylistQueue
 
 class Converter {
     fun convertMediaDataToQueue(medias: List<MediaData>): List<PlaylistQueue>? {
-        val playlistQueue = arrayListOf<PlaylistQueue>()
-        for (i in medias) {
-            playlistQueue.add(
-                PlaylistQueue(i.fileID, i)
-            )
-        }
-        if (playlistQueue.size == 0) return null
+        val playlistQueue = medias.map {
+            PlaylistQueue(it.fileID, it)
+        }.toList()
+        if (playlistQueue.isEmpty()) return null
         return playlistQueue
     }
 
     fun convertQueueToMediaData(queue: List<PlaylistQueue>): List<MediaData>? {
-        val medias = arrayListOf<MediaData>()
-        for (i in queue) {
-            medias.add(
-                i.mediaData
-            )
+        val medias = queue.map {
+            it.mediaData
         }
-        if (medias.size == 0) return null
+        if (medias.isEmpty()) return null
         return medias
     }
 }

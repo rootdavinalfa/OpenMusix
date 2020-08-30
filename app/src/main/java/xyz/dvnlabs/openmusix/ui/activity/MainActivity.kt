@@ -129,6 +129,11 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                         binding.playerLayout.playerExpand.isExpanded = true
                     }
                 }
+                R.id.fragmentPlaylist -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
                 else -> {
                     binding.playerLayout.playerExpand.isExpanded = true
                     binding.playerLayout.bottomNav.menu.findItem(destination.id).isChecked = true
