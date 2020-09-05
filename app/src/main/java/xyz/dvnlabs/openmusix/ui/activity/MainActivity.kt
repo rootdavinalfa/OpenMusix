@@ -43,7 +43,6 @@ import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.app.AppSingleton
 import xyz.dvnlabs.openmusix.base.BaseActivity
 import xyz.dvnlabs.openmusix.data.MediaDB
-import xyz.dvnlabs.openmusix.data.MediaData
 import xyz.dvnlabs.openmusix.databinding.ActivityMainBinding
 import xyz.dvnlabs.openmusix.service.OpenMusixAPI
 import xyz.dvnlabs.openmusix.service.PlaybackStatus
@@ -134,6 +133,16 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                         binding.playerLayout.playerExpand.isExpanded = true
                     }
                 }
+                R.id.fragmentPlaylistDetail -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
+                R.id.fragmentAbout -> {
+                    if (fileID != -1L) {
+                        binding.playerLayout.playerExpand.isExpanded = true
+                    }
+                }
                 else -> {
                     binding.playerLayout.playerExpand.isExpanded = true
                     binding.playerLayout.bottomNav.menu.findItem(destination.id).isChecked = true
@@ -153,13 +162,12 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemResele
                     OpenMusixAPI.api?.playDefault(media, currentPosition, false)
                 }
                 if (queueID != -1L && OpenMusixAPI.api?.liveStateChange?.value?.state != PlaybackStatus.PLAYING) {
-                    val queues = mediaDB.mediaQueueDetailDAO().getQueueDetailByQueueID(queueID)
-                    val medias = ArrayList<MediaData>()
-                    for (i in queues) {
-                        val mediax = mediaDB.mediaDataDAO().getMediaByID(i.fileID)
-                        medias.add(mediax)
-                    }
-                    OpenMusixAPI.api?.playNewQueue(medias = medias, playWhenReady = false)
+                    val queues = mediaDB.mediaDataDAO().getMediaByQueue(queueID)
+                    OpenMusixAPI.api?.playNewQueue(
+                        id = queueID,
+                        medias = queues,
+                        playWhenReady = false
+                    )
                 }
             }
         }

@@ -80,6 +80,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/settingAbout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -88,7 +89,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:tint="@color/colorText"
+                app:tint="@color/colorText"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:padding="5dp"

@@ -9,24 +9,26 @@
 
 package xyz.dvnlabs.openmusix.ui.fragment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import xyz.dvnlabs.openmusix.R
-import xyz.dvnlabs.openmusix.databinding.FragmentSettingBinding
+import xyz.dvnlabs.openmusix.databinding.FragmentAboutBinding
 
-class FragmentSetting : FragmentHost() {
-    private var binding: FragmentSettingBinding? = null
+class FragmentAbout : FragmentHost() {
+    var binding: FragmentAboutBinding? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSettingBinding.bind(
+        binding = FragmentAboutBinding.bind(
             inflater.inflate(
-                R.layout.fragment_setting,
+                R.layout.fragment_about,
                 container,
                 false
             )
@@ -35,14 +37,15 @@ class FragmentSetting : FragmentHost() {
     }
 
     override fun onDestroyView() {
-        binding = null
         super.onDestroyView()
+        binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding?.settingAbout?.setOnClickListener {
-            val navController = it.findNavController()
-            navController.navigate(R.id.fragmentAbout)
+        binding?.linkToGithub?.setOnClickListener {
+            val intent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/rootdavinalfa/OpenMusix"))
+            startActivity(intent)
         }
     }
 }

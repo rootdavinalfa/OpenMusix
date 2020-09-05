@@ -71,19 +71,28 @@ class FragmentAddPlaylist : BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 //Create new queue
                 binding?.addNewPlaylistName?.text?.toString()?.let { it1 ->
-                    mediaDB.mediaQueueDAO().newQueue(
-                        MediaQueue(
-                            name = it1,
-                            systemGenerated = false,
-                            created = System.currentTimeMillis()
+                    if (it1.isBlank() or it1.isEmpty()) {
+                        Toast.makeText(
+                            requireContext(),
+                            "You must enter the name!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        mediaDB.mediaQueueDAO().newQueue(
+                            MediaQueue(
+                                name = it1,
+                                systemGenerated = false,
+                                created = System.currentTimeMillis()
+                            )
                         )
-                    )
+                        Toast.makeText(
+                            requireContext(),
+                            "Successfully adding new playlist!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
-                Toast.makeText(
-                    requireContext(),
-                    "Successfully adding new playlist!",
-                    Toast.LENGTH_SHORT
-                ).show()
+
 
                 binding?.addPlaylistNewInputContainer?.let { it1 -> changeVisibility(false, it1) }
                 binding?.addNewPlaylist?.let { it1 -> changeVisibility(true, it1) }

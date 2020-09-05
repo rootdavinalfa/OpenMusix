@@ -52,4 +52,8 @@ interface MediaDataDAO {
     @Transaction
     @Query("SELECT MediaData.* FROM MediaData INNER JOIN MediaGenre ON MediaData.file_id = MediaGenre.file_id AND MediaGenre.genre_id = :genre")
     suspend fun getMediaDataByGenre(genre: Long): List<MediaData>
+
+    @Transaction
+    @Query("SELECT MediaData.* FROM MediaData INNER JOIN MediaQueueDetail ON MediaData.file_id == MediaQueueDetail.file_id AND MediaQueueDetail.queue_id = :queueID")
+    suspend fun getMediaByQueue(queueID: Long): List<MediaData>
 }

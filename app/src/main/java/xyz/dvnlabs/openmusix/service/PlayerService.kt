@@ -325,7 +325,7 @@ class PlayerService : Service(), AudioManager.OnAudioFocusChangeListener, Player
     }
 
     fun addPlayList(playList: List<PlaylistQueue>) {
-        if (playList.isNotEmpty() && playList.size != currentPlaylist.size) {
+        if (playList.isNotEmpty() && playList != currentPlaylist) {
             val mediaSource: MediaSource?
             var mediaProgressive: Array<MediaSource> = emptyArray()
             for (i in playList) {

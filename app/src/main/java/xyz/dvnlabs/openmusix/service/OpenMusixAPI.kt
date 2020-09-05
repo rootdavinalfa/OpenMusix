@@ -181,23 +181,29 @@ class OpenMusixAPI(private val context: Context) : LifecycleService() {
         }
     }
 
-    fun playNewQueue(name: String = "SYS", medias: List<MediaData>, playWhenReady: Boolean = true) {
+    fun playNewQueue(
+        id: Long = -1L,
+        sys: Boolean = true,
+        medias: List<MediaData>,
+        playWhenReady: Boolean = true
+    ) {
         lifecycleScope.launch {
             val playList = Converter().convertMediaDataToQueue(medias)
             Log.i(
                 this.javaClass.simpleName,
                 "Playing with queue! Size playlist: ${playList?.size}"
             )
-            if (name == "SYS") {
-                mediaDB.mediaQueueDAO().deleteQueueByName(name)
-            }
-            val queue = mediaDB.mediaQueueDAO().newQueue(
-                MediaQueue(name = name)
-            )
-            for (i in medias) {
-                mediaDB.mediaQueueDetailDAO().newQueueDetail(
-                    QueueDetail(queueID = queue, fileID = i.fileID)
+
+            if (sys) {
+                mediaDB.mediaQueueDAO().deleteQueueByName("SYS")
+                val queue = mediaDB.mediaQueueDAO().newQueue(
+                    MediaQueue(name = "SYS")
                 )
+                for (i in medias) {
+                    mediaDB.mediaQueueDetailDAO().newQueueDetail(
+                        QueueDetail(queueID = queue, fileID = i.fileID)
+                    )
+                }
             }
 
             playList?.let {
@@ -209,7 +215,7 @@ class OpenMusixAPI(private val context: Context) : LifecycleService() {
                 }
             }
             with(sharedPref.edit()) {
-                this.putLong("queue", queue)
+                this.putLong("queue", id)
                 apply()
             }
         }
@@ -231,6 +237,7 @@ class OpenMusixAPI(private val context: Context) : LifecycleService() {
      */
     fun addPlaylists(playlist: List<PlaylistQueue>) {
         service?.addPlayList(playlist)
+        service?.exoPlayer?.playWhenReady = true
     }
 
     /**

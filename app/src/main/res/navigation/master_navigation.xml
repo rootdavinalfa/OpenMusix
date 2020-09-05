@@ -46,6 +46,12 @@
         <action
             android:id="@+id/action_fragmentMenu_to_fragmentPlaylist"
             app:destination="@id/fragmentPlaylist" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentPlaylistDetail"
+            app:destination="@id/fragmentPlaylistDetail" />
+        <action
+            android:id="@+id/action_fragmentMenu_to_fragmentAbout"
+            app:destination="@id/fragmentAbout" />
     </fragment>
     <fragment
         android:id="@+id/fragmentSearch"
@@ -128,5 +134,22 @@
     <fragment
         android:id="@+id/fragmentPlaylist"
         android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentPlaylist"
-        android:label="Playlist" />
+        android:label="Playlist">
+        <action
+            android:id="@+id/action_fragmentPlaylist_to_fragmentPlaylistDetail"
+            app:destination="@id/fragmentPlaylistDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentPlaylistDetail"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentPlaylistDetail"
+        android:label="FragmentPlaylistDetail">
+        <argument
+            android:name="queueID"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentAbout"
+        android:name="xyz.dvnlabs.openmusix.ui.fragment.FragmentAbout"
+        android:label="About OpenMusix" />
 </navigation>

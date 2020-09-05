@@ -30,7 +30,6 @@
         android:fontFamily="sans-serif-light"
         android:maxLines="2"
         android:padding="5dp"
-        android:text="Itsuka kawaru aajhj"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -38,7 +37,8 @@
         app:layout_constraintBottom_toTopOf="@+id/mediaDetail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Itsuka kawaru aajhj" />
 
     <TextView
         android:id="@+id/mediaDetail"

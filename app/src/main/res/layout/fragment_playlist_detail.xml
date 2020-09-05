@@ -23,21 +23,38 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/playlistDetailText"
             style="@style/TextHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="43dp"
             android:layout_marginEnd="16dp"
-            android:text="Playlist"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Playlist" />
+
+        <ImageView
+            android:id="@+id/playlistPlay"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/circle_bg"
+            android:backgroundTint="@color/blackTrans"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/actionBarItemBackground"
+            android:src="@drawable/exo_controls_play"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlistList"
+        android:id="@+id/playlistSongList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -46,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
-        tools:listitem="@layout/rv_playlist" />
+        tools:listitem="@layout/rv_media" />
 
     <TextView
         android:id="@+id/errorText"

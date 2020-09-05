@@ -178,10 +178,14 @@
                 android:text="Playlist"
                 android:textSize="16sp" />
 
-            <View
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/menuPlaylistList"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:background="@color/colorPrimary" />
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/rv_playlist" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

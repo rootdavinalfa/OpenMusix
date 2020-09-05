@@ -16,18 +16,16 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import xyz.dvnlabs.openmusix.R
-import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.databinding.FragmentMenuBinding
+import xyz.dvnlabs.openmusix.ui.list.APlaylistAdapter
 import xyz.dvnlabs.openmusix.ui.list.MediaListAdapter
 import xyz.dvnlabs.openmusix.ui.list.PListAdapter
 import xyz.dvnlabs.openmusix.ui.viewmodel.QuickListViewModel
 
 class FragmentMenu : FragmentHost() {
     private var binding: FragmentMenuBinding? = null
-    private val mediaDB: MediaDB by inject()
     private val quickVM: QuickListViewModel by sharedViewModel()
 
     override fun onCreateView(
@@ -81,6 +79,14 @@ class FragmentMenu : FragmentHost() {
         binding?.menuTopList?.adapter = adapterTop
         quickVM.topPlay.observe(viewLifecycleOwner, Observer {
             adapterTop.setMediaList(it)
+        })
+
+        val playlistAdapter = APlaylistAdapter(R.layout.rv_playlist)
+        val lManagerPlist = LinearLayoutManager(requireContext())
+        binding?.menuPlaylistList?.layoutManager = lManagerPlist
+        binding?.menuPlaylistList?.adapter = playlistAdapter
+        quickVM.playlist.observe(viewLifecycleOwner, Observer {
+            playlistAdapter.setMediaList(it)
         })
     }
 
