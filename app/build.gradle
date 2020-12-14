@@ -11,7 +11,6 @@ apply plugin: 'com.android.application'
 apply plugin: "androidx.navigation.safeargs"
 
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'koin'
 
@@ -19,13 +18,13 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.5"
 
     defaultConfig {
         applicationId "xyz.dvnlabs.openmusix"
         minSdkVersion 22
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "0-A1-"
         versionNameSuffix "alpha"
@@ -42,6 +41,8 @@ android {
             zipAlignEnabled true
             debuggable false
             jniDebuggable false
+            //minifyEnabled true
+            multiDexEnabled true
             shrinkResources true
 
             // Includes the default ProGuard rules files that are packaged with
@@ -50,8 +51,6 @@ android {
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'),
                     'proguard-rules.pro'
-            minifyEnabled = true
-            multiDexEnabled = true
         }
     }
 
