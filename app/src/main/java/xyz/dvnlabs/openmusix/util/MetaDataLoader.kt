@@ -24,7 +24,9 @@ class MetaDataLoader {
             try {
                 retriever.setDataSource(context, Uri.parse(url))
                 val image = retriever.embeddedPicture
-                bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
+                image?.let {
+                    bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

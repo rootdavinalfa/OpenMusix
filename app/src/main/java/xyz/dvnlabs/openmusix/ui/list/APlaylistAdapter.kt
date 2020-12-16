@@ -21,13 +21,15 @@ import kotlinx.android.synthetic.main.rv_playlist.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
 import xyz.dvnlabs.openmusix.R
 import xyz.dvnlabs.openmusix.data.MediaDB
 import xyz.dvnlabs.openmusix.data.MediaQueue
 import xyz.dvnlabs.openmusix.ui.fragment.FragmentMenuDirections
 import xyz.dvnlabs.openmusix.ui.fragment.FragmentPlaylistDirections
 
+@KoinApiExtension
 class APlaylistAdapter(val itemResource: Int) :
     RecyclerView.Adapter<APlaylistAdapter.ViewHolder>(), KoinComponent {
     private var mediaList: List<MediaQueue> = emptyList()

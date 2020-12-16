@@ -13,11 +13,13 @@ import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import xyz.dvnlabs.openmusix.data.*
 
+@KoinApiExtension
 class QuickListViewModel(application: Application) : AndroidViewModel(application), KoinComponent {
     private val mediaDB: MediaDB by inject { parametersOf(application) }
 
